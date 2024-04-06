@@ -17,8 +17,11 @@ jobs:
       - name: Copy .env
         run: php -r "file_exists('.env') || copy('.env.example', '.env');"
 
+      - name: Clearing Cache
+        run: composer clearcache
+        
       - name: Install Dependencies
-        run: composer update --clear-cache
+        run: composer update
 
       - name: Install npm
         run: npm install
