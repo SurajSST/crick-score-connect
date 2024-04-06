@@ -18,7 +18,7 @@ jobs:
         run: php -r "file_exists('.env') || copy('.env.example', '.env');"
 
       - name: Install Dependencies
-        run: composer update
+        run: composer update --clear-cache
 
       - name: Install npm
         run: npm install
