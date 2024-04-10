@@ -31,7 +31,7 @@ class User extends Authenticatable
         'dob',
         'phone',
         'address',
-        'playerType'
+        'playerType',
     ];
 
     /**

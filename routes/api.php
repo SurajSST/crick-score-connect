@@ -27,6 +27,14 @@ Route::apiResource('battingstats', BattingStatsController::class);
 Route::apiResource('bowlingstats', BowlingStatsController::class);
 
 
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'),'verified',])->group(function () {
+    Route::get('/dashboard', function () {
+        return view('dashboard');
+    })->name('dashboard');
+
+
+});
+
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');

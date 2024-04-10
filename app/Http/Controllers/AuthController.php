@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\User;
@@ -137,7 +138,7 @@ class AuthController extends Controller
 
     protected function authSuccessResponse($user)
     {
-        $userDetails = $user->only('name', 'username', 'email', 'dob', 'phone', 'address', 'playerType');
+        $userDetails = $user->only('name', 'username', 'email', 'dob', 'phone', 'address', 'playerType', 'profile_photo_url');
         return response()->json(['token' => $user->createToken('auth-token')->plainTextToken, 'user' => $userDetails]);
     }
 }
