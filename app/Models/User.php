@@ -67,4 +67,45 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    public function teams()
+    {
+        return $this->hasMany(Team::class);
+    }
+
+    // Define the relationship with Team model for teams the user is a member of
+    public function teamsAsPlayer()
+    {
+        // Assuming many-to-many relationship with pivot table 'team_players'
+        return $this->belongsToMany(Team::class, 'team_players');
+    }
+
+    // Define the relationship with BattingStats model for batting stats of the user
+    public function battingStats()
+    {
+        return $this->hasMany(BattingStats::class);
+    }
+
+    // Define the relationship with BowlingStats model for bowling stats of the user
+    public function bowlingStats()
+    {
+        return $this->hasMany(BowlingStats::class);
+    }
+
+    // Define the relationship with FriendRequest model for friend requests sent by the user
+    public function sentFriendRequests()
+    {
+        return $this->hasMany(FriendRequest::class, 'sender_id');
+    }
+
+    // Define the relationship with FriendRequest model for friend requests received by the user
+    public function receivedFriendRequests()
+    {
+        return $this->hasMany(FriendRequest::class, 'receiver_id');
+    }
+
+    // Define the relationship with Friendship model for friendships of the user
+    public function friendships()
+    {
+        return $this->hasMany(Friendship::class, 'user1_id')->orWhere('user2_id', $this->id);
+    }
 }

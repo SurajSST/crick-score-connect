@@ -11,13 +11,12 @@ use App\Http\Controllers\BattingStatsController;
 use App\Http\Controllers\BowlingStatsController;
 
 
-
-Route::post('/login',[AuthController::class,'login'])->name('api.login');
+Route::post('/login',[AuthController::class,'login'])->name('api.login')->middleware('checkPostMethod');
 Route::post('/register',[AuthController::class,'register'])->name('api.register');
 Route::post('/forgotPassword',[AuthController::class,'forgotPassword'])->name('api.forgotPassword');
 Route::post('/logout',[AuthController::class,'logout'])->name('api.logout');
 Route::get('/users/search', [ApiController::class, 'searchUsers'])->name('api.users.search');
-
+Route::get('/user/{user_id}/stats', [ApiController::class, 'getUserStats'])->name('api.getUserStats');
 
 Route::apiResource('teams', TeamController::class);
 Route::apiResource('team-players', TeamController::class);

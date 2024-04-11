@@ -13,4 +13,19 @@ class Team extends Model
         'user_id',
         'name',
     ];
+
+    public function owner()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function players()
+    {
+        return $this->belongsToMany(User::class, 'team_players');
+    }
+
+    public function matches()
+    {
+        return $this->hasMany(Matches::class, 'team1_id')->orWhere('team2_id', $this->id);
+    }
 }

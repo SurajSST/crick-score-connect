@@ -20,4 +20,26 @@ class Matches extends Model
         'overs',
         'players_per_team',
     ];
+    public function team1()
+    {
+        return $this->belongsTo(Team::class, 'team1_id');
+    }
+
+    // Define the relationship with Team model for the second team in the match
+    public function team2()
+    {
+        return $this->belongsTo(Team::class, 'team2_id');
+    }
+
+    // Define the relationship with Team model for the toss winner team
+    public function tossWinner()
+    {
+        return $this->belongsTo(Team::class, 'toss_winner_id');
+    }
+
+    // Define the relationship with Innings model for innings of the match
+    public function innings()
+    {
+        return $this->hasMany(Innings::class);
+    }
 }

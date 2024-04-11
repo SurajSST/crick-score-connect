@@ -2,22 +2,29 @@
 
 namespace Database\Seeders;
 
+use App\Models\BattingStats;
+use App\Models\BowlingStats;
+use App\Models\FriendRequest;
+use App\Models\Friendship;
+use App\Models\Innings;
+use App\Models\Matches;
+use App\Models\Team;
 use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // User::factory(10)->create();
+        User::factory(10)->create();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        Team::factory(10)->create();
+
+        Matches::factory(5)->create();
+        Innings::factory(10)->create();
+        FriendRequest::factory(10)->create();
+        Friendship::factory(5)->create();
+        BattingStats::factory(10)->create();
+        BowlingStats::factory(10)->create();
     }
 }
