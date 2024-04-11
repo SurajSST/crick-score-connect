@@ -19,8 +19,14 @@ jobs:
         with:
           php-version: 8.2
 
-      - name: Install Dependencies
-        run: composer install
+      - name: Update Dependencies
+        run: composer update
+
+      - name: npm install
+        run: npm install
+
+      - name: npm build
+        run: npm run build
 
       - name: 📂 Sync files
         uses: SamKirkland/FTP-Deploy-Action@4.0.0
