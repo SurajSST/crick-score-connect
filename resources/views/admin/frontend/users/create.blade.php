@@ -19,10 +19,11 @@
                             <input type="text" class="form-control" name="name" value="{{ old('name', isset($user) ? $user->name : '') }}" placeholder="User Name">
                         </div>
                     </div>
+
                     <div class="form-group row">
-                        <label class="col-sm-3 col-form-label">Country</label>
+                        <label class="col-sm-3 col-form-label">Username</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" name="country" value="{{ old('country', isset($user) ? $user->country : '') }}" placeholder="User country">
+                            <input type="text" class="form-control" name="username" value="{{ old('username', isset($user) ? $user->username : '') }}" placeholder="Username">
                         </div>
                     </div>
 
@@ -34,11 +35,34 @@
                     </div>
 
                     <div class="form-group row">
-                        <label class="col-sm-3 col-form-label">Role</label>
+                        <label class="col-sm-3 col-form-label">Date of Birth</label>
                         <div class="col-sm-9">
-                            <select class="form-control form-control-lg default-select" name="role">
-                                <option value="admin" {{ isset($user) && $user->role == 'admin' ? 'selected' : '' }}>Admin</option>
-                                <option value="user" {{ isset($user) && $user->role == 'user' ? 'selected' : '' }}>User</option>
+                            <input type="date" class="form-control" name="dob" value="{{ old('dob', isset($user) ? $user->dob : '') }}">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Phone</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" name="phone" value="{{ old('phone', isset($user) ? $user->phone : '') }}" placeholder="User Phone">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Address</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" name="address" value="{{ old('address', isset($user) ? $user->address : '') }}" placeholder="User Address">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Player Type</label>
+                        <div class="col-sm-9">
+                            <select class="form-control form-control-lg default-select" name="playerType">
+                                <option value="Bowler" {{ isset($user) && $user->playerType == 'Bowler' ? 'selected' : '' }}>Bowler</option>
+                                <option value="Batsman" {{ isset($user) && $user->playerType == 'Batsman' ? 'selected' : '' }}>Batsman</option>
+                                <option value="Wicket-keeper" {{ isset($user) && $user->playerType == 'Wicket-keeper' ? 'selected' : '' }}>Wicket-keeper</option>
+                                <option value="All-Rounder" {{ isset($user) && $user->playerType == 'All-Rounder' ? 'selected' : '' }}>All-Rounder</option>
                             </select>
                         </div>
                     </div>

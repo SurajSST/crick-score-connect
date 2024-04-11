@@ -8,9 +8,6 @@ Route::get('/', function () {
 });
 Route::redirect('/admin', '/admin/dashboard');
 
-Route::prefix('admin')->name('admin.')->group(function () {
-    Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
-});
 
 Route::middleware([
     'auth:sanctum',
@@ -20,4 +17,13 @@ Route::middleware([
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
+
+    Route::prefix('admin')->name('admin.')->group(function () {
+        Route::get('/dashboard', [AdminController::class, 'index'])->name('index');
+        Route::get('/users', [AdminController::class, 'allUsers'])->name('users');
+        Route::get('/users/{id}/edit', [AdminController::class, 'editUser'])->name('user.edit');
+        Route::delete('/users/{id}', [AdminController::class, 'deleteUser'])->name('user.delete');
+        Route::put('/users/{user}', [AdminController::class, 'updateUser'])->name('user.update');
+
+    });
 });

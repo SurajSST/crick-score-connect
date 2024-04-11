@@ -17,9 +17,11 @@
                             <tr>
                                 <th>SN</th>
                                 <th>Name</th>
-                                <th>Country</th>
+                                <th>Username</th>
                                 <th>Email</th>
-                                <th>Role</th>
+                                <th>DOB</th>
+                                <th>Phone</th>
+                                <th>Address</th>
                                 <th>Created At</th>
                                 <th>Action</th>
                             </tr>
@@ -30,9 +32,11 @@
                             <tr>
                                 <td>{{ $key + 1 }}</td>
                                 <td>{{ $user->name }}</td>
-                                <td>{{ $user->country }}</td>
+                                <td>{{ $user->username }}</td>
                                 <td>{{ $user->email }}</td>
-                                <td>{{ $user->role }}</td>
+                                <td>{{ $user->dob }}</td>
+                                <td>{{ $user->phone }}</td>
+                                <td>{{ $user->address }}</td>
                                 <td>{{ $user->created_at->format('Y-m-d') }}</td>
                                 <td>
                                     <div class="d-flex">

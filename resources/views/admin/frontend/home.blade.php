@@ -49,19 +49,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-sm-6">
-            <div class="card">
-                <div class="card-body">
-                    <div class="media align-items-center">
-                        <div class="media-body mr-3">
-                            <h2 class="fs-34 text-black font-w600">{{ $totalBlogs }}</h2>
-                            <span>Total Blogs</span>
-                        </div>
-                        <i class="fa fa-newspaper-o fa-3x"></i> <!-- Font Awesome blogs icon -->
-                    </div>
-                </div>
-            </div>
-        </div>
+
     </div>
 </div>
 @endsection
