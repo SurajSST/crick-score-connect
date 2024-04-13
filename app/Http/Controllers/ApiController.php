@@ -5,9 +5,56 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
+
 
 class ApiController extends Controller
 {
+    public function userEdit(Request $request, $id)
+    {
+        try {
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'dob' => 'nullable|date',
+                'phone' => 'nullable|string|max:255',
+                'address' => 'nullable|string|max:255',
+                'player_type' => 'nullable|in:Bowler,Batsman,Wicket-keeper,All-Rounder',
+                'profile_photo' => 'nullable|image|max:10240', // Max file size 10MB
+            ]);
+
+            $user = User::findOrFail($id);
+
+            $user->name = $request->name;
+            $user->dob = $request->dob;
+            $user->phone = $request->phone;
+            $user->address = $request->address;
+            $user->player_type = $request->player_type;
+
+            if ($request->hasFile('profile_photo')) {
+                if ($user->profile_photo_path) {
+                    Storage::delete($user->profile_photo_path);
+                }
+                $user->profile_photo_path = $request->file('profile_photo')->store('profile-photos', 'public');
+            }
+
+            $user->save();
+
+            return response()->json([
+                'message' => 'User updated successfully',
+                'user' => $user
+            ]);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['error' => 'User not found.'], 404);
+        } catch (ValidationException $e) {
+            return response()->json(['error' => $e->validator->errors()], 422);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Something went wrong.'], 500);
+        }
+    }
+
+
     public function searchUsers(Request $request)
     {
         try {

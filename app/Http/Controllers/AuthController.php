@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Password;
@@ -22,12 +23,19 @@ class AuthController extends Controller
             return $this->validationErrorResponse($validator->errors()->first());
         }
 
-        if (Auth::attempt($request->only('email', 'password'))) {
+        $credentials = $request->only('email', 'password');
+        if (Auth::attempt($credentials)) {
+            $user = Auth::user();
+            if ($user instanceof MustVerifyEmail && !$user->hasVerifiedEmail()) {
+                Auth::logout();
+                return response()->json(['error' => 'Email not verified'], 403);
+            }
+
             return $this->authSuccessResponse(Auth::user());
         }
-
         return $this->unauthorizedErrorResponse('Invalid credentials');
     }
+
 
     public function register(Request $request)
     {
@@ -138,7 +146,7 @@ class AuthController extends Controller
 
     protected function authSuccessResponse($user)
     {
-        $userDetails = $user->only('name', 'username', 'email', 'dob', 'phone', 'address', 'playerType', 'profile_photo_url');
+        $userDetails = $user->only('id', 'name', 'username', 'email', 'dob', 'phone', 'address', 'playerType', 'profile_photo_url');
         return response()->json(['token' => $user->createToken('auth-token')->plainTextToken, 'user' => $userDetails]);
     }
 }

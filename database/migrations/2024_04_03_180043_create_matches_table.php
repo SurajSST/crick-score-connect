@@ -17,6 +17,8 @@ return new class extends Migration
             $table->foreignId('team2_id')->constrained('teams')->onDelete('cascade');
             $table->dateTime('date');
             $table->string('time');
+            $table->string('key')->unique()->nullable();
+            $table->enum('status', ['ongoing', 'ended'])->default('ongoing');
             $table->string('match_result')->nullable();
             $table->foreignId('toss_winner_id')->constrained('teams')->onDelete('cascade');
             $table->string('venue');

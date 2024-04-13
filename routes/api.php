@@ -14,7 +14,9 @@ use App\Http\Controllers\BowlingStatsController;
 Route::post('/login',[AuthController::class,'login'])->name('api.login')->middleware('checkPostMethod');
 Route::post('/register',[AuthController::class,'register'])->name('api.register');
 Route::post('/forgotPassword',[AuthController::class,'forgotPassword'])->name('api.forgotPassword');
-Route::post('/logout',[AuthController::class,'logout'])->name('api.logout');
+Route::post('/logout', [AuthController::class,'logout'])->name('api.logout');
+Route::put('/users/{id}', [ApiController::class,'userEdit'])->name('api.user.edit');
+
 Route::post('/users/search', [ApiController::class, 'searchUsers'])->name('api.users.search');
 Route::get('/user/{user_id}/stats', [ApiController::class, 'getUserStats'])->name('api.getUserStats');
 
