@@ -2,6 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -29,6 +31,44 @@ return new class extends Migration
                 ->default('Batsman');
             $table->timestamps();
         });
+
+        DB::table('users')->insert([
+            'name' => 'Bibek',
+            'username' => 'bibek',
+            'email' => 'bbekblack@gmail.com',
+            'email_verified_at' => now(),
+            'password' => Hash::make('password'),
+            'phone' => '1234567890',
+            'dob' => '1990-01-01',
+            'address' => 'Address',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        DB::table('users')->insert([
+            'name' => 'bimal',
+            'username' => 'bimal_username',
+            'email' => 'bimal@gmail.com',
+            'email_verified_at' => now(),
+            'password' => Hash::make('password'),
+            'phone' => '9876543210',
+            'dob' => '1995-05-05',
+            'address' => 'bimal Address',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        DB::table('users')->insert([
+            'name' => 'suraj',
+            'username' => 'suraj_username',
+            'email' => 'suraj@gmail.com',
+            'email_verified_at' => now(),
+            'password' => Hash::make('password'),
+            'phone' => '9876543210',
+            'dob' => '1995-05-05',
+            'address' => 'suraj Address',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();

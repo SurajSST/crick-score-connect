@@ -38,7 +38,7 @@ class ApiController extends Controller
                 if ($user->profile_photo_path) {
                     Storage::delete($user->profile_photo_path);
                 }
-                $user->profile_photo_path = $request->file('profile_photo')->store('profile-photos', 'public');
+                $user->profile_photo_path = $request->file('profile_photo_path')->store('profile-photos', 'public');
             }
 
             $user->save();
