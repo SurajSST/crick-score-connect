@@ -32,7 +32,7 @@ class ApiController extends Controller
             $user->dob = $request->dob;
             $user->phone = $request->phone;
             $user->address = $request->address;
-            $user->player_type = $request->playerType;
+            $user->playerType = $request->player_type;
 
             if ($request->hasFile('profile_photo_path')) {
                 if ($user->profile_photo_path) {
