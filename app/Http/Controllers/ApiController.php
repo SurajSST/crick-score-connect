@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\FriendRequest;
+use App\Models\Friendship;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
@@ -21,7 +23,7 @@ class ApiController extends Controller
                 'phone' => 'nullable|string|max:255',
                 'address' => 'nullable|string|max:255',
                 'player_type' => 'nullable|in:Bowler,Batsman,Wicket-keeper,All-Rounder',
-                'profile_photo' => 'nullable|image|max:10240', // Max file size 10MB
+                'profile_photo_path' => 'nullable|image|max:10240', // Max file size 10MB
             ]);
 
             $user = User::findOrFail($id);
@@ -32,7 +34,7 @@ class ApiController extends Controller
             $user->address = $request->address;
             $user->player_type = $request->player_type;
 
-            if ($request->hasFile('profile_photo')) {
+            if ($request->hasFile('profile_photo_path')) {
                 if ($user->profile_photo_path) {
                     Storage::delete($user->profile_photo_path);
                 }
@@ -139,6 +141,88 @@ class ApiController extends Controller
             ], 200);
         } catch (\Exception $e) {
             return response()->json(['error' => 'User stats not found'], 404);
+        }
+    }
+
+
+    public function sendFriendRequest(Request $request)
+    {
+        $request->validate([
+            'sender_id' => 'required|exists:users,id',
+            'receiver_id' => 'required|exists:users,id',
+        ]);
+
+        $friendRequest = FriendRequest::create([
+            'sender_id' => $request->sender_id,
+            'receiver_id' => $request->receiver_id,
+            'status' => 'pending',
+        ]);
+
+        return response()->json(['message' => 'Friend request sent', 'request' => $friendRequest]);
+    }
+
+    public function confirmFriendRequest(Request $request, $requestId)
+    {
+        try {
+            $friendRequest = FriendRequest::findOrFail($requestId);
+
+            $friendRequest->update(['status' => 'accepted']);
+
+            Friendship::create([
+                'user1_id' => $friendRequest->sender_id,
+                'user2_id' => $friendRequest->receiver_id,
+                'status' => 'active',
+            ]);
+
+            return response()->json(['message' => 'Friend request confirmed']);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['error' => 'Friend request not found'], 404);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Something went wrong'], 500);
+        }
+    }
+
+    public function rejectFriendRequest(Request $request, $requestId)
+    {
+        try {
+            $friendRequest = FriendRequest::findOrFail($requestId);
+
+            $friendRequest->update(['status' => 'declined']);
+
+            return response()->json(['message' => 'Friend request rejected']);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['error' => 'Friend request not found'], 404);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Something went wrong'], 500);
+        }
+    }
+
+    public function searchFriendRequests(Request $request, $userId)
+    {
+        try {
+            $friendRequests = FriendRequest::where('receiver_id', $userId)->get();
+
+            return response()->json(['friend_requests' => $friendRequests]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Something went wrong'], 500);
+        }
+    }
+
+    public function searchFriendList(Request $request, $userId)
+    {
+        try {
+            $friendships = Friendship::where(function ($query) use ($userId) {
+                $query->where('user1_id', $userId)
+                    ->orWhere('user2_id', $userId);
+            })->where('status', 'active')->get();
+
+            $friendIds = $friendships->pluck('user1_id')->merge($friendships->pluck('user2_id'));
+
+            $friends = User::whereIn('id', $friendIds)->get();
+
+            return response()->json(['friends' => $friends]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Something went wrong'], 500);
         }
     }
 }
