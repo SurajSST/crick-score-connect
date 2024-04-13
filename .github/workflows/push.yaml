@@ -20,7 +20,7 @@ jobs:
           php-version: 8.2
 
       - name: 📦 Install Dependencies
-        run: composer install --quiet --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+        run: composer update
 
       - name: npm install
         run: npm install
