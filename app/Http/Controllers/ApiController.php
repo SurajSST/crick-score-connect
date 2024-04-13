@@ -23,7 +23,7 @@ class ApiController extends Controller
                 'phone' => 'nullable|string|max:255',
                 'address' => 'nullable|string|max:255',
                 'player_type' => 'nullable|in:Bowler,Batsman,Wicket-keeper,All-Rounder',
-                'profile_photo_path' => 'nullable|image|max:10240', // Max file size 10MB
+                'profile_photo_path' => 'nullable', // Max file size 10MB
             ]);
 
             $user = User::findOrFail($id);
@@ -55,7 +55,6 @@ class ApiController extends Controller
             return response()->json(['error' => 'Something went wrong.'], 500);
         }
     }
-
 
     public function searchUsers(Request $request)
     {
@@ -203,6 +202,23 @@ class ApiController extends Controller
             $friendRequests = FriendRequest::where('receiver_id', $userId)->get();
 
             return response()->json(['friend_requests' => $friendRequests]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Something went wrong'], 500);
+        }
+    }
+
+    public function pendingFriendRequests(Request $request)
+    {
+        try {
+            $userId = $request->input('user_id');
+
+            $friendRequests = FriendRequest::where('receiver_id', $userId)
+                ->where('status', 'pending')
+                ->join('users', 'friend_requests.sender_id', '=', 'users.id')
+                ->select('friend_requests.*', 'users.username as sender_username', 'users.name as sender_name', 'users.profile_photo_path')
+                ->get();
+
+            return response()->json(['friend_requests' => $friendRequests], 200);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Something went wrong'], 500);
         }

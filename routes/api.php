@@ -15,12 +15,12 @@ Route::post('/login', [AuthController::class, 'login'])->name('api.login')->midd
 Route::post('/register', [AuthController::class, 'register'])->name('api.register');
 Route::post('/forgotPassword', [AuthController::class, 'forgotPassword'])->name('api.forgotPassword');
 Route::post('/logout', [AuthController::class, 'logout'])->name('api.logout');
-Route::post('/users/{id}', [ApiController::class, 'userEdit'])->name('api.user.edit');
 Route::post('/users/search', [ApiController::class, 'searchUsers'])->name('api.users.search');
-
 Route::get('/user/{user_id}/stats', [ApiController::class, 'getUserStats'])->name('api.getUserStats');
+Route::post('/users/{id}/edit', [ApiController::class, 'userEdit'])->name('api.user.edit');
 
 Route::post('friend-requests', [ApiController::class, 'sendFriendRequest'])->name('api.friend-requests.send');
+Route::post('/friend-requests/pending', [ApiController::class, 'pendingFriendRequests'])->name('api.friendRequests.pending');
 Route::put('friend-requests/{requestId}/confirm', [ApiController::class, 'confirmFriendRequest'])->name('api.friend-requests.confirm');
 Route::put('friend-requests/{requestId}/reject', [ApiController::class, 'rejectFriendRequest'])->name('api.friend-requests.reject');
 Route::get('users/{userId}/friend-requests', [ApiController::class, 'searchFriendRequests'])->name('api.friend-requests.search');
