@@ -22,6 +22,12 @@ jobs:
       - name: 📦 Install Dependencies
         run: composer install --quiet --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
 
+      - name: npm install
+        run: npm install
+
+      - name: npm build
+        run: npm run build
+
       - name: 📂 Sync files
         uses: SamKirkland/FTP-Deploy-Action@4.0.0
         with:
