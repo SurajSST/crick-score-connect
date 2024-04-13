@@ -12,6 +12,11 @@ class ApiController extends Controller
     {
         try {
             $query = $request->input('query');
+
+            if (!$query) {
+                return response()->json([], 200);
+            }
+
             $users = User::where('name', 'LIKE', "%$query%")
                 ->orWhere('email', 'LIKE', "%$query%")
                 ->orWhere('username', 'LIKE', "%$query%")
