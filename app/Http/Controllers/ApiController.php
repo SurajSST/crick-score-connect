@@ -52,7 +52,7 @@ class ApiController extends Controller
         } catch (ValidationException $e) {
             return response()->json(['error' => $e->validator->errors()], 422);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Something went wrong.'], 500);
+            return response()->json(['error' => $e], 500);
         }
     }
 
