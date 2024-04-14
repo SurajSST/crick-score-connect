@@ -139,7 +139,7 @@ class ApiController extends Controller
                     'strikeRate' => '0', // Calculate strike rate if needed
                     'maidens' => (string)$totalMaidens,
                     'wickets' => (string)$totalWickets,
-                    'bowling' => (string)$bBowling,
+                    'bbowling' => (string)$bBowling,
                     'ecoRate' => (string)round($bowlingEconomyRate, 2),
                 ],
             ], 200);
