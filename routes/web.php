@@ -12,7 +12,7 @@ Route::redirect('/', '/admin');
 Route::redirect('/admin', '/admin/dashboard');
 Route::get('/storage-link', function () {
     Artisan::call('storage:link');
-    return redirect()->back();
+    return redirect()->back()->with('success', 'Storage Linked Successfully');
 })->name('storage.link');
 
 Route::middleware([

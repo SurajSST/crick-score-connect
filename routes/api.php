@@ -17,6 +17,7 @@ Route::post('/forgotPassword', [AuthController::class, 'forgotPassword'])->name(
 Route::post('/logout', [AuthController::class, 'logout'])->name('api.logout');
 Route::post('/users/search', [ApiController::class, 'searchUsers'])->name('api.users.search');
 Route::get('/user/{user_id}/stats', [ApiController::class, 'getUserStats'])->name('api.getUserStats');
+Route::get('/user/stats/{user_id}', [ApiController::class, 'getUserStatsApi'])->name('api.getUserStatsApi');
 Route::post('/users/{id}/edit', [ApiController::class, 'userEdit'])->name('api.user.edit');
 
 Route::post('friend-requests', [ApiController::class, 'sendFriendRequest'])->name('api.friend-requests.send');
