@@ -16,14 +16,14 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        User::factory(10)->create();
+        User::factory(100)->create();
 
         Team::factory(10)->create();
 
         Matches::factory(5)->create();
         Innings::factory(10)->create();
         FriendRequest::factory(10)->create();
-        Friendship::factory(5)->create();
+        Friendship::factory()->count(30)->create();
         BattingStats::factory(10)->create();
         BowlingStats::factory(10)->create();
     }

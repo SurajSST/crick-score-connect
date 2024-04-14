@@ -10,6 +10,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
 
@@ -61,12 +62,20 @@ class ApiController extends Controller
     {
         try {
             $query = $request->input('query');
+            $authenticatedUserId = $request->input('user_id');
+
+            // Validate the authenticated user ID
+            $validator = Validator::make($request->all(), [
+                'user_id' => 'required|exists:users,id',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['error' => $validator->errors()->first()], 400);
+            }
 
             if (!$query) {
                 return response()->json([], 200);
             }
-
-            $authenticatedUserId = $request->input('user_id');
 
             $users = User::where('name', 'LIKE', "%$query%")
                 ->orWhere('email', 'LIKE', "%$query%")
@@ -151,7 +160,7 @@ class ApiController extends Controller
                     'strikeRate' => '0', // Calculate strike rate if needed
                     'maidens' => (string)$totalMaidens,
                     'wickets' => (string)$totalWickets,
-                    'bbowling' => (string)$bBowling,
+                    'bBowling' => (string)$bBowling,
                     'ecoRate' => (string)round($bowlingEconomyRate, 2),
                 ],
             ], 200);
