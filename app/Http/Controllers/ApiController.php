@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
@@ -65,9 +66,21 @@ class ApiController extends Controller
                 return response()->json([], 200);
             }
 
+            $authenticatedUserId = $request->input('user_id');
+
             $users = User::where('name', 'LIKE', "%$query%")
                 ->orWhere('email', 'LIKE', "%$query%")
                 ->orWhere('username', 'LIKE', "%$query%")
+                ->whereNotExists(function ($query) use ($authenticatedUserId) {
+                    $query->select(DB::raw(1))
+                        ->from('friend_requests')
+                        ->where('status', 'pending')
+                        ->where(function ($query) use ($authenticatedUserId) {
+                            $query->where('sender_id', $authenticatedUserId)
+                                ->orWhere('receiver_id', $authenticatedUserId);
+                        })
+                        ->whereRaw('sender_id = users.id OR receiver_id = users.id');
+                })
                 ->get(['id', 'name', 'username']);
 
             return response()->json($users, 200);
@@ -75,7 +88,6 @@ class ApiController extends Controller
             return response()->json(['error' => 'Failed to search users. Please try again later.'], 500);
         }
     }
-
     public function getUserStatsApi($userId)
     {
         try {
