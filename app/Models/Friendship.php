@@ -8,6 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class Friendship extends Model
 {
     use HasFactory;
+
+    protected $fillable=[
+        'user1_id',
+        'user2_id',
+        'status',
+    ];
     public function user1()
     {
         return $this->belongsTo(User::class, 'user1_id');

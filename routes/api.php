@@ -21,8 +21,8 @@ Route::post('/users/{id}/edit', [ApiController::class, 'userEdit'])->name('api.u
 
 Route::post('friend-requests', [ApiController::class, 'sendFriendRequest'])->name('api.friend-requests.send');
 Route::post('/friend-requests/pending', [ApiController::class, 'pendingFriendRequests'])->name('api.friendRequests.pending');
-Route::put('friend-requests/{requestId}/confirm', [ApiController::class, 'confirmFriendRequest'])->name('api.friend-requests.confirm');
-Route::put('friend-requests/{requestId}/reject', [ApiController::class, 'rejectFriendRequest'])->name('api.friend-requests.reject');
+Route::post('friend-requests/{requestId}/confirm', [ApiController::class, 'confirmFriendRequest'])->name('api.friend-requests.confirm');
+Route::post('friend-requests/{requestId}/reject', [ApiController::class, 'rejectFriendRequest'])->name('api.friend-requests.reject');
 Route::get('users/{userId}/friend-requests', [ApiController::class, 'searchFriendRequests'])->name('api.friend-requests.search');
 Route::get('users/{userId}/friends', [ApiController::class, 'searchFriendList'])->name('api.friends.search');
 
