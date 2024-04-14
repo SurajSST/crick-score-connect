@@ -79,6 +79,7 @@ class ApiController extends Controller
     public function getUserStats($userId)
     {
         try {
+            // Fetch user details
             $user = User::findOrFail($userId);
 
             // Batting Stats
@@ -113,7 +114,17 @@ class ApiController extends Controller
                     return $bestSoFar;
                 }, []);
 
+            // User Details
+            $userDetails = [
+                'id' => $user->id,
+                'name' => $user->name,
+                'username' => $user->username,
+                'email' => $user->email,
+                'profile_photo_path' => $user->profile_photo_path,
+            ];
+
             return response()->json([
+                'user' => $userDetails,
                 'batting' => [
                     'matches' => $totalMatches,
                     'innings' => $totalInnings,
