@@ -28,4 +28,8 @@ class Team extends Model
     {
         return $this->hasMany(Matches::class, 'team1_id')->orWhere('team2_id', $this->id);
     }
+    public function users()
+    {
+        return $this->belongsToMany(User::class);
+    }
 }

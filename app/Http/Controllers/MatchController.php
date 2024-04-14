@@ -8,97 +8,72 @@ use App\Models\Matches;
 use App\Models\Team;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 class MatchController extends Controller
 {
     public function store(Request $request)
     {
-        if ($request->filled(['team_id', 'user_id'])) {
-            $validator = Validator::make($request->all(), [
-                'team_id' => 'required|exists:teams,id',
-                'user_id' => 'required|exists:users,id',
-            ]);
+        $validator = Validator::make($request->all(), [
+            'user_id' => 'required|exists:users,id',
+            'team1.name' => 'required|string',
+            'team1.type' => 'required|in:home,away',
+            'team1.users.*' => 'required|exists:users,id',
+            'team2.name' => 'required|string',
+            'team2.type' => 'required|in:home,away',
+            'team2.users.*' => 'required|exists:users,id',
+            'date' => 'required|date',
+            'time' => 'required',
+            'venue' => 'required|string',
+            'overs' => 'required|numeric',
+            'players_per_team' => 'required|numeric',
+            'toss_winner' => 'required|in:team1,team2'
+        ]);
 
-            if ($validator->fails()) {
-                return response()->json(['error' => $validator->errors()->first()], 400);
-            }
-
-            $team = Team::find($request->input('team_id'));
-            if (!$team) {
-                return response()->json(['error' => 'Team not found'], 404);
-            }
-
-            $user = User::find($request->input('user_id'));
-            if (!$user) {
-                return response()->json(['error' => 'User not found'], 404);
-            }
-
-            $team->users()->attach($user);
-
-            return response()->json(['message' => 'Player added to team successfully']);
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 400);
         }
 
-        if ($request->filled(['team1_id', 'team2_id', 'date', 'time', 'toss_winner_id', 'venue', 'overs', 'players_per_team'])) {
-            $validator = Validator::make($request->all(), [
-                'team1_id' => 'required|exists:teams,id',
-                'team2_id' => 'required|exists:teams,id|different:team1_id',
-                'date' => 'required|date',
-                'time' => 'required',
-                'toss_winner_id' => 'required|exists:teams,id|different:team1_id|different:team2_id',
-                'venue' => 'required|string',
-                'overs' => 'required|numeric',
-                'players_per_team' => 'required|numeric',
+        DB::beginTransaction();
+
+        try {
+            // Create Team 1
+            $team1 = new Team([
+                'user_id' => $request->input('user_id'),
+                'name' => $request->input('team1.name'),
+                'type' => $request->input('team1.type'),
             ]);
+            $team1->save();
+            $team1->players()->attach($request->input('team1.users'));
 
-            if ($validator->fails()) {
-                return response()->json(['error' => $validator->errors()->first()], 400);
-            }
-
-            $match = Matches::create($request->all());
-            return response()->json(['message' => 'Match created successfully'], 201);
-        }
-
-        if ($request->filled(['user_id', 'match_id', 'innings_id', 'runs_scored', 'fours', 'sixes', 'strike_rate', 'balls_faced'])) {
-            $validator = Validator::make($request->all(), [
-                'user_id' => 'required|exists:users,id',
-                'match_id' => 'required|exists:matches,id',
-                'innings_id' => 'required|exists:innings,id',
-                'runs_scored' => 'required|integer',
-                'fours' => 'required|integer',
-                'sixes' => 'required|integer',
-                'strike_rate' => 'required|numeric',
-                'balls_faced' => 'required|integer',
+            // Create Team 2
+            $team2 = new Team([
+                'user_id' => $request->input('user_id'),
+                'name' => $request->input('team2.name'),
+                'type' => $request->input('team2.type'),
             ]);
+            $team2->save();
+            $team2->players()->attach($request->input('team2.users'));
 
-            if ($validator->fails()) {
-                return response()->json(['error' => $validator->errors()->first()], 400);
-            }
+            // Determine the toss winner
+            $tossWinnerId = $request->input('toss_winner') === 'team1' ? $team1->id : $team2->id;
 
-            $battingStats = BattingStats::create($request->all());
-            return response()->json(['message' => 'Batting stats created successfully'], 201);
+            // Create the match
+            $matchData = $request->only(['date', 'time', 'venue', 'overs', 'players_per_team']);
+            $matchData['team1_id'] = $team1->id;
+            $matchData['team2_id'] = $team2->id;
+            $matchData['toss_winner_id'] = $tossWinnerId;
+
+            $match = Matches::create($matchData);
+
+            DB::commit();
+
+            return response()->json($match, 201);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json(['error' => $e->getMessage()], 500);
         }
-
-        if ($request->filled(['user_id', 'match_id', 'innings_id', 'overs_bowled', 'runs_conceded', 'wickets_taken', 'maidens', 'economy_rate'])) {
-            $validator = Validator::make($request->all(), [
-                'user_id' => 'required|exists:users,id',
-                'match_id' => 'required|exists:matches,id',
-                'innings_id' => 'required|exists:innings,id',
-                'overs_bowled' => 'required|numeric',
-                'runs_conceded' => 'required|integer',
-                'wickets_taken' => 'required|integer',
-                'maidens' => 'required|integer',
-                'economy_rate' => 'required|numeric',
-            ]);
-
-            if ($validator->fails()) {
-                return response()->json(['error' => $validator->errors()->first()], 400);
-            }
-
-            $bowlingStats = BowlingStats::create($request->all());
-            return response()->json(['message' => 'Bowling stats created successfully'], 201);
-        }
-
-        return response()->json(['error' => 'Invalid request'], 400);
     }
 }

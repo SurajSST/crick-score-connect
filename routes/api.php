@@ -9,7 +9,7 @@ use App\Http\Controllers\MatchesController;
 use App\Http\Controllers\InningsController;
 use App\Http\Controllers\BattingStatsController;
 use App\Http\Controllers\BowlingStatsController;
-
+use App\Http\Controllers\MatchController;
 
 Route::post('/login', [AuthController::class, 'login'])->name('api.login')->middleware('checkPostMethod');
 Route::post('/register', [AuthController::class, 'register'])->name('api.register');
@@ -19,6 +19,8 @@ Route::post('/users/search', [ApiController::class, 'searchUsers'])->name('api.u
 Route::get('/user/{user_id}/stats', [ApiController::class, 'getUserStats'])->name('api.getUserStats');
 Route::get('/user/stats/{user_id}', [ApiController::class, 'getUserStatsApi'])->name('api.getUserStatsApi');
 Route::post('/users/{id}/edit', [ApiController::class, 'userEdit'])->name('api.user.edit');
+
+Route::post('match/store', [MatchController::class, 'store'])->name('api.match.store');
 
 
 Route::post('friend-requests', [ApiController::class, 'sendFriendRequest'])->name('api.friend-requests.send');
