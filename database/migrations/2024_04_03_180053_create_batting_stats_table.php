@@ -16,12 +16,12 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('match_id')->constrained()->onDelete('cascade');
             $table->foreignId('innings_id')->constrained('innings')->onDelete('cascade');
-            $table->integer('runs_scored');
-            $table->integer('fours');
-            $table->integer('sixes');
-            $table->decimal('strike_rate', 8, 2);
-            $table->integer('balls_faced');
-            // Add other batting stats-related columns here
+            $table->integer('runs_scored')->default(0);
+            $table->integer('fours')->default(0);
+            $table->integer('sixes')->default(0);
+            $table->decimal('strike_rate', 8, 2)->default(0);
+            $table->integer('balls_faced')->default(0);
+            $table->enum('status', ['striker', 'non-striker', 'bencher'])->default('bencher');
             $table->timestamps();
         });
     }

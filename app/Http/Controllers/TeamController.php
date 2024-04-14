@@ -18,17 +18,24 @@ class TeamController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|unique:teams',
-            'user_id' => 'required|exists:users,id'
+            'teams.*.name' => 'required|string|unique:teams,name',
+            'teams.*.user_id' => 'required|exists:users,id',
+            'teams.*.type' => 'required|in:home,away',
         ]);
 
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()->first()], 400);
         }
 
-        $team = Team::create($request->all());
-        return response()->json($team, 201);
+        $teams = [];
+        foreach ($request->input('teams') as $teamData) {
+            $team = Team::create($teamData);
+            $teams[] = $team;
+        }
+
+        return response()->json($teams, 201);
     }
+
 
     public function show($id)
     {
@@ -70,5 +77,4 @@ class TeamController extends Controller
         $team->delete();
         return response()->json(null, 204);
     }
-
 }

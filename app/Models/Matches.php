@@ -42,4 +42,8 @@ class Matches extends Model
     {
         return $this->hasMany(Innings::class);
     }
+    public function battingStats()
+    {
+        return $this->hasMany(BattingStats::class);
+    }
 }

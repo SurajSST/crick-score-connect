@@ -16,12 +16,12 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('match_id')->constrained()->onDelete('cascade');
             $table->foreignId('innings_id')->constrained('innings')->onDelete('cascade');
-            $table->decimal('overs_bowled', 5, 2);
-            $table->integer('runs_conceded');
-            $table->integer('wickets_taken');
-            $table->integer('maidens');
-            $table->decimal('economy_rate', 8, 2);
-            // Add other bowling stats-related columns here
+            $table->decimal('overs_bowled', 5, 2)->default(0);
+            $table->integer('runs_conceded')->default(0);
+            $table->integer('wickets_taken')->default(0);
+            $table->integer('maidens')->default(0);
+            $table->decimal('economy_rate', 8, 2)->default(0);
+            $table->enum('status', ['bowling', 'not_bowling'])->default('not_bowling');
             $table->timestamps();
         });
     }

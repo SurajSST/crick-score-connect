@@ -20,6 +20,7 @@ Route::get('/user/{user_id}/stats', [ApiController::class, 'getUserStats'])->nam
 Route::get('/user/stats/{user_id}', [ApiController::class, 'getUserStatsApi'])->name('api.getUserStatsApi');
 Route::post('/users/{id}/edit', [ApiController::class, 'userEdit'])->name('api.user.edit');
 
+
 Route::post('friend-requests', [ApiController::class, 'sendFriendRequest'])->name('api.friend-requests.send');
 Route::post('/friend-requests/pending', [ApiController::class, 'pendingFriendRequests'])->name('api.friendRequests.pending');
 Route::post('friend-requests/{requestId}/confirm', [ApiController::class, 'confirmFriendRequest'])->name('api.friend-requests.confirm');
