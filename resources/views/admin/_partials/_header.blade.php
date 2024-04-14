@@ -2,6 +2,7 @@
     <div class="header-content">
         <nav class="navbar navbar-expand">
             <div class="collapse navbar-collapse justify-content-between">
+                <a href="{{ route('storage.link') }}" class="btn btn-primary">Storage Link</a>
                 <ul class="navbar-nav header-right">
                     <li class="nav-item dropdown header-profile">
                         <a class="nav-link" href="javascript:void(0)" role="button" data-toggle="dropdown">

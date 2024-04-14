@@ -120,7 +120,7 @@ class ApiController extends Controller
                 'name' => $user->name,
                 'username' => $user->username,
                 'email' => $user->email,
-                'profile_photo_path' => $user->profile_photo_path,
+                'profile_photo_url' => $user->profile_photo_path,
             ];
 
             return response()->json([

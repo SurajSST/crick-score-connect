@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
+use Illuminate\Support\Facades\Artisan;
 
 // Route::get('/', function () {
 //     return view('welcome');
@@ -9,7 +10,10 @@ use App\Http\Controllers\AdminController;
 Route::redirect('/', '/admin');
 
 Route::redirect('/admin', '/admin/dashboard');
-
+Route::get('/storage-link', function () {
+    Artisan::call('storage:link');
+    return redirect()->back();
+})->name('storage.link');
 
 Route::middleware([
     'auth:sanctum',
