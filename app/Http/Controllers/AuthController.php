@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -36,7 +37,6 @@ class AuthController extends Controller
         return $this->unauthorizedErrorResponse('Invalid credentials');
     }
 
-
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -65,6 +65,11 @@ class AuthController extends Controller
             'playerType' => $request->input('playerType', 'Batsman'),
         ]);
 
+        event(new Registered($user));
+
+        if ($user instanceof MustVerifyEmail && !$user->hasVerifiedEmail()) {
+            return response()->json(['error' => 'Email verification required'], 403);
+        }
         return $this->authSuccessResponse($user);
     }
 
