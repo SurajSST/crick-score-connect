@@ -100,28 +100,64 @@ class MatchController extends Controller
         $match = Matches::with(['team1.users', 'team2.users'])->findOrFail($matchId);
 
         $homeTeam = $match->team1->users->map(function ($teamPlayer) {
-            $user = $teamPlayer->user;
             return [
                 'id' => $teamPlayer->id,
                 'name' => $teamPlayer->name,
                 'username' => $teamPlayer->username,
-                'battingStats' => $teamPlayer->battingStats,
-                'bowlingStats' => $teamPlayer->bowlingStats,
+                'matchBattingStat' => $teamPlayer->battingStats->map(function ($battingStat) {
+                    return [
+                        'runs' => $battingStat->runs_scored,
+                        'balls' => $battingStat->balls_faced,
+                        'fours' => $battingStat->fours,
+                        'sixes' => $battingStat->sixes,
+                    ];
+                }),
+                'matchBowlingStat' => $teamPlayer->bowlingStats->map(function ($bowlingStat) {
+                    return [
+                        'runs' => $bowlingStat->runs_conceded,
+                        'balls' => $bowlingStat->balls,
+                        'fours' => $bowlingStat->fours,
+                        'sixes' => $bowlingStat->sixes,
+                        'wides' => $bowlingStat->wides,
+                        'noBalls' => $bowlingStat->noBalls,
+                        'maidens' => $bowlingStat->maidens,
+                        'wickets' => $bowlingStat->wickets_taken,
+                        'overs' => $bowlingStat->overs_bowled,
+                    ];
+                }),
             ];
         });
 
         $awayTeam = $match->team2->users->map(function ($teamPlayer) {
-            $user = $teamPlayer->user;
             return [
                 'id' => $teamPlayer->id,
                 'name' => $teamPlayer->name,
                 'username' => $teamPlayer->username,
-                'battingStats' => $teamPlayer->battingStats,
-                'bowlingStats' => $teamPlayer->bowlingStats,
+                'matchBattingStat' => $teamPlayer->battingStats->map(function ($battingStat) {
+                    return [
+                        'runs' => $battingStat->runs_scored,
+                        'balls' => $battingStat->balls_faced,
+                        'fours' => $battingStat->fours,
+                        'sixes' => $battingStat->sixes,
+                    ];
+                }),
+                'matchBowlingStat' => $teamPlayer->bowlingStats->map(function ($bowlingStat) {
+                    return [
+                        'runs' => $bowlingStat->runs_conceded,
+                        'balls' => $bowlingStat->balls,
+                        'fours' => $bowlingStat->fours,
+                        'sixes' => $bowlingStat->sixes,
+                        'wides' => $bowlingStat->wides,
+                        'noBalls' => $bowlingStat->noBalls,
+                        'maidens' => $bowlingStat->maidens,
+                        'wickets' => $bowlingStat->wickets_taken,
+                        'overs' => $bowlingStat->overs_bowled,
+                    ];
+                }),
             ];
         });
 
-        // Prepare the response
+
         $response = [
             "isGameFinished" => $match->isGameFinished,
             "finishedMessage" => $match->finishedMessage,
@@ -135,7 +171,6 @@ class MatchController extends Controller
             "awayTeam" => $awayTeam
         ];
 
-        // Return the response as JSON
         return response()->json($response);
     }
 }

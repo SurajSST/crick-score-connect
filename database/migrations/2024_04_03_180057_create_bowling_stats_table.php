@@ -16,6 +16,9 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('match_id')->constrained()->onDelete('cascade');
             $table->foreignId('innings_id')->constrained('innings')->onDelete('cascade');
+            $table->integer('balls')->default(0);
+            $table->integer('wides')->default(0);
+            $table->integer('noBalls')->default(0);
             $table->decimal('overs_bowled', 5, 2)->default(0);
             $table->integer('runs_conceded')->default(0);
             $table->integer('wickets_taken')->default(0);
