@@ -68,6 +68,12 @@ class MatchController extends Controller
 
             $match = Matches::create($matchData);
 
+            // Generate and assign a unique key
+            $uniqueKey = '#' . $this->generateUniqueNumericKey() . $this->generateUniqueAlphaKey();
+            $match->key = $uniqueKey;
+
+            $match->save();
+
             DB::commit();
 
             return response()->json($match, 201);
@@ -75,5 +81,15 @@ class MatchController extends Controller
             DB::rollback();
             return response()->json(['error' => $e->getMessage()], 500);
         }
+    }
+
+    private function generateUniqueNumericKey()
+    {
+        return str_pad(mt_rand(1, 999), 3, '0', STR_PAD_LEFT);
+    }
+
+    private function generateUniqueAlphaKey()
+    {
+        return chr(rand(65, 90)); // Generates a random uppercase letter (A-Z)
     }
 }
