@@ -24,13 +24,13 @@ return new class extends Migration
             $table->integer('overs');
             $table->integer('players_per_team');
             $table->boolean('isGameFinished')->default(false);
-            $table->string('finishedMessage')->nullable();
+            $table->string('finishedMessage')->nullable()->default('Message');
             $table->boolean('isGameCanceled')->default(false);
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->integer('target')->nullable();
-            $table->decimal('CRR', 8, 2)->nullable();
-            $table->decimal('RRR', 8, 2)->nullable();
-            $table->json('extras')->nullable(); // JSON column for storing additional information like byes, leg byes, wides, etc.
+            $table->integer('target')->default(0);
+            $table->decimal('CRR', 8, 2)->default(0);
+            $table->decimal('RRR', 8, 2)->default(0);
+            $table->json('extras')->default('{"byes": 0, "legByes": 0, "wide": 0, "noBall": 0, "penalty": 0}');
             $table->timestamps();
         });
     }

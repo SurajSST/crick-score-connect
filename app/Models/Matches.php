@@ -20,6 +20,9 @@ class Matches extends Model
         'overs',
         'players_per_team',
     ];
+    protected $casts = [
+        'extras' => 'array',
+    ];
     public function team1()
     {
         return $this->belongsTo(Team::class, 'team1_id');

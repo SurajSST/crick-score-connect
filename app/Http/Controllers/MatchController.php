@@ -97,65 +97,78 @@ class MatchController extends Controller
 
     public function sendGameResponse(Request $request, $matchId)
     {
-        $match = Matches::with(['team1.users', 'team2.users'])->findOrFail($matchId);
+        $match = Matches::with(['team1.users.battingStats', 'team2.users.battingStats', 'team1.users.bowlingStats', 'team2.users.bowlingStats'])->findOrFail($matchId);
 
         $homeTeam = $match->team1->users->map(function ($teamPlayer) {
+            $battingStats = $teamPlayer->battingStats->isEmpty() ? null : [
+                'runs' => $teamPlayer->battingStats->sum('runs_scored'),
+                'balls' => $teamPlayer->battingStats->sum('balls_faced'),
+                'fours' => $teamPlayer->battingStats->sum('fours'),
+                'sixes' => $teamPlayer->battingStats->sum('sixes'),
+            ];
+
+            $bowlingStats = $teamPlayer->bowlingStats->isEmpty() ? null : [
+                'runs' => $teamPlayer->bowlingStats->sum('runs'),
+                'balls' => $teamPlayer->bowlingStats->sum('balls'),
+                'fours' => $teamPlayer->bowlingStats->sum('fours'),
+                'sixes' => $teamPlayer->bowlingStats->sum('sixes'),
+                'wides' => $teamPlayer->bowlingStats->sum('wides'),
+                'noBalls' => $teamPlayer->bowlingStats->sum('noBalls'),
+                'maidens' => $teamPlayer->bowlingStats->sum('maidens'),
+                'wickets' => $teamPlayer->bowlingStats->sum('wickets'),
+                'overs' => $teamPlayer->bowlingStats->sum('overs'),
+            ];
+
             return [
                 'id' => $teamPlayer->id,
                 'name' => $teamPlayer->name,
                 'username' => $teamPlayer->username,
-                'matchBattingStat' => [
-                    'runs' => $teamPlayer->battingStats->sum('runs_scored'),
-                    'balls' => $teamPlayer->battingStats->sum('balls_faced'),
-                    'fours' => $teamPlayer->battingStats->sum('fours'),
-                    'sixes' => $teamPlayer->battingStats->sum('sixes'),
-                ],
-
-                'matchBowlingStat' => [
-                    'runs' => $teamPlayer->bowlingStats->sum('runs'),
-                    'balls' => $teamPlayer->bowlingStats->sum('balls'),
-                    'fours' => $teamPlayer->bowlingStats->sum('fours'),
-                    'sixes' => $teamPlayer->bowlingStats->sum('sixes'),
-                    'wides' => $teamPlayer->bowlingStats->sum('wides'),
-                    'noBalls' => $teamPlayer->bowlingStats->sum('noBalls'),
-                    'maidens' => $teamPlayer->bowlingStats->sum('maidens'),
-                    'wickets' => $teamPlayer->bowlingStats->sum('wickets'),
-                    'overs' => $teamPlayer->bowlingStats->sum('overs'),
-                ],
+                'striker' => (bool) $teamPlayer->battingStats->first()->is_striker,
+                'nonStriker' => (bool) $teamPlayer->battingStats->first()->is_non_striker,
+                'bowler' => (bool) $teamPlayer->bowlingStats->first()->is_bowling,
+                'out' => $teamPlayer->battingStats->first()->out,
+                'matchBattingStat' => $battingStats,
+                'matchBowlingStat' => $bowlingStats,
             ];
         });
 
         $awayTeam = $match->team2->users->map(function ($teamPlayer) {
+            $battingStats = $teamPlayer->battingStats->isEmpty() ? null : [
+                'runs' => $teamPlayer->battingStats->sum('runs_scored'),
+                'balls' => $teamPlayer->battingStats->sum('balls_faced'),
+                'fours' => $teamPlayer->battingStats->sum('fours'),
+                'sixes' => $teamPlayer->battingStats->sum('sixes'),
+            ];
+
+            $bowlingStats = $teamPlayer->bowlingStats->isEmpty() ? null : [
+                'runs' => $teamPlayer->bowlingStats->sum('runs'),
+                'balls' => $teamPlayer->bowlingStats->sum('balls'),
+                'fours' => $teamPlayer->bowlingStats->sum('fours'),
+                'sixes' => $teamPlayer->bowlingStats->sum('sixes'),
+                'wides' => $teamPlayer->bowlingStats->sum('wides'),
+                'noBalls' => $teamPlayer->bowlingStats->sum('noBalls'),
+                'maidens' => $teamPlayer->bowlingStats->sum('maidens'),
+                'wickets' => $teamPlayer->bowlingStats->sum('wickets'),
+                'overs' => $teamPlayer->bowlingStats->sum('overs'),
+            ];
+
             return [
                 'id' => $teamPlayer->id,
                 'name' => $teamPlayer->name,
                 'username' => $teamPlayer->username,
-                'matchBattingStat' => [
-                    'runs' => $teamPlayer->battingStats->sum('runs_scored'),
-                    'balls' => $teamPlayer->battingStats->sum('balls_faced'),
-                    'fours' => $teamPlayer->battingStats->sum('fours'),
-                    'sixes' => $teamPlayer->battingStats->sum('sixes'),
-                ],
-
-                'matchBowlingStat' => [
-                    'runs' => $teamPlayer->bowlingStats->sum('runs'),
-                    'balls' => $teamPlayer->bowlingStats->sum('balls'),
-                    'fours' => $teamPlayer->bowlingStats->sum('fours'),
-                    'sixes' => $teamPlayer->bowlingStats->sum('sixes'),
-                    'wides' => $teamPlayer->bowlingStats->sum('wides'),
-                    'noBalls' => $teamPlayer->bowlingStats->sum('noBalls'),
-                    'maidens' => $teamPlayer->bowlingStats->sum('maidens'),
-                    'wickets' => $teamPlayer->bowlingStats->sum('wickets'),
-                    'overs' => $teamPlayer->bowlingStats->sum('overs'),
-                ],
+                'striker' => (bool) $teamPlayer->battingStats->first()->is_striker,
+                'nonStriker' => (bool) $teamPlayer->battingStats->first()->is_non_striker,
+                'bowler' => (bool) $teamPlayer->bowlingStats->first()->is_bowling,
+                'out' => $teamPlayer->battingStats->first()->out,
+                'matchBattingStat' => $battingStats,
+                'matchBowlingStat' => $bowlingStats,
             ];
         });
 
-
         $response = [
-            "isGameFinished" => $match->isGameFinished,
-            "finishedMessage" => $match->finishedMessage,
-            "isGameCanceled" => $match->isGameCanceled,
+            "isGameFinished" => (bool) $match->isGameFinished,
+            "finishedMessage" => $match->finishedMessage ?? 'Default message', // Default message if finishedMessage is null
+            "isGameCanceled" => (bool) $match->isGameCanceled,
             "user_id" => $match->user_id,
             "target" => $match->target,
             "CRR" => $match->CRR,

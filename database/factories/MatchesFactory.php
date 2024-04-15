@@ -38,13 +38,7 @@ class MatchesFactory extends Factory
             'venue' => $this->faker->city,
             'overs' => $this->faker->randomDigit,
             'players_per_team' => $this->faker->randomDigit,
-            'isGameFinished' => false, // Default value
-            'isGameCanceled' => false, // Default value
             'user_id' => User::inRandomOrder()->first()->id,
-            'target' => null, // Default value, assuming no target initially
-            'CRR' => null, // Default value, assuming no value initially
-            'RRR' => null, // Default value, assuming no value initially
-            'extras' => null, // Default value, assuming no extras initially
         ];
     }
 }

@@ -22,6 +22,7 @@ return new class extends Migration
             $table->decimal('strike_rate', 8, 2)->default(0);
             $table->integer('balls_faced')->default(0);
             $table->boolean('is_striker')->default(false);
+            $table->boolean('out')->default(false);
             $table->boolean('is_non_striker')->default(false);
             $table->boolean('is_bencher')->default(true);
             $table->timestamps();
