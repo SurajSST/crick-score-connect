@@ -126,7 +126,7 @@ class MatchController extends Controller
                 'striker' => (bool) $teamPlayer->battingStats->first()->is_striker,
                 'nonStriker' => (bool) $teamPlayer->battingStats->first()->is_non_striker,
                 'bowler' => (bool) $teamPlayer->bowlingStats->first()->is_bowling,
-                'out' => $teamPlayer->battingStats->first()->out,
+                'out' => (bool) $teamPlayer->battingStats->first()->out,
                 'matchBattingStat' => $battingStats,
                 'matchBowlingStat' => $bowlingStats,
             ];
@@ -159,7 +159,7 @@ class MatchController extends Controller
                 'striker' => (bool) $teamPlayer->battingStats->first()->is_striker,
                 'nonStriker' => (bool) $teamPlayer->battingStats->first()->is_non_striker,
                 'bowler' => (bool) $teamPlayer->bowlingStats->first()->is_bowling,
-                'out' => $teamPlayer->battingStats->first()->out,
+                'out' => (bool) $teamPlayer->battingStats->first()->out,
                 'matchBattingStat' => $battingStats,
                 'matchBowlingStat' => $bowlingStats,
             ];
