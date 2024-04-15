@@ -14,33 +14,19 @@ class BattingStatsFactory extends Factory
 
     public function definition()
     {
-        $user = User::all()->random();
-        $match = Matches::all()->random();
-        $innings = Innings::all()->random();
+        $user = User::inRandomOrder()->first();
+        $matchIds = [1, 2];
+        $innings = Innings::factory()->create();
 
         return [
             'user_id' => $user->id,
-            'match_id' => $match->id,
+            'match_id' => $this->faker->randomElement($matchIds),
             'innings_id' => $innings->id,
             'runs_scored' => $this->faker->numberBetween(0, 200),
             'fours' => $this->faker->numberBetween(0, 50),
             'sixes' => $this->faker->numberBetween(0, 20),
             'strike_rate' => $this->faker->randomFloat(2, 50, 200),
             'balls_faced' => $this->faker->numberBetween(0, 300),
-            'status' => 'bencher', // By default, the player is on the bench
         ];
-    }
-
-    public function configure()
-    {
-        return $this->afterCreating(function (BattingStats $battingStats) {
-            $matchBattingStats = BattingStats::where('match_id', $battingStats->match_id)->get();
-
-            if ($matchBattingStats->count() == 1) {
-                $battingStats->update(['status' => 'striker']);
-            } elseif ($matchBattingStats->count() == 2) {
-                $battingStats->update(['status' => 'non-striker']);
-            }
-        });
     }
 }

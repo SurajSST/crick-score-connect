@@ -18,15 +18,24 @@ return new class extends Migration
             $table->dateTime('date');
             $table->string('time');
             $table->string('key')->unique()->nullable();
-            $table->enum('status', ['ongoing', 'ended'])->default('ongoing');
-            $table->string('match_result')->nullable();
             $table->foreignId('toss_winner_id')->constrained('teams')->onDelete('cascade');
+            $table->boolean('toss_winner_batting_first')->default(true); // New column to determine if the toss winner decides to bat first
             $table->string('venue');
             $table->integer('overs');
             $table->integer('players_per_team');
+            $table->boolean('isGameFinished')->default(false);
+            $table->string('finishedMessage')->nullable();
+            $table->boolean('isGameCanceled')->default(false);
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->integer('target')->nullable();
+            $table->decimal('CRR', 8, 2)->nullable();
+            $table->decimal('RRR', 8, 2)->nullable();
+            $table->json('extras')->nullable(); // JSON column for storing additional information like byes, leg byes, wides, etc.
             $table->timestamps();
         });
     }
+
+
 
     /**
      * Reverse the migrations.

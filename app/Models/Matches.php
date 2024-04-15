@@ -44,6 +44,10 @@ class Matches extends Model
     }
     public function battingStats()
     {
-        return $this->hasMany(BattingStats::class);
+        return $this->hasMany(BattingStats::class, 'match_id');
+    }
+    public function bowlingStats()
+    {
+        return $this->hasMany(BowlingStats::class, 'match_id');
     }
 }

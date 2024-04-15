@@ -81,13 +81,10 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsToMany(Team::class, 'team_players');
     }
 
-    // Define the relationship with BattingStats model for batting stats of the user
     public function battingStats()
     {
         return $this->hasMany(BattingStats::class);
     }
-
-    // Define the relationship with BowlingStats model for bowling stats of the user
     public function bowlingStats()
     {
         return $this->hasMany(BowlingStats::class);

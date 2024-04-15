@@ -25,6 +25,7 @@ class TeamFactory extends Factory
         return [
             'user_id' => User::all()->random()->id,
             'name' => $this->faker->company,
+            'type' => $this->faker->randomElement(['home', 'away']),
         ];
     }
 }

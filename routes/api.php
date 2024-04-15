@@ -21,7 +21,7 @@ Route::get('/user/stats/{user_id}', [ApiController::class, 'getUserStatsApi'])->
 Route::post('/users/{id}/edit', [ApiController::class, 'userEdit'])->name('api.user.edit');
 
 Route::post('match/store', [MatchController::class, 'store'])->name('api.match.store');
-
+Route::get('/games/{matchId}', [MatchController::class, 'sendGameResponse']);
 
 Route::post('friend-requests', [ApiController::class, 'sendFriendRequest'])->name('api.friend-requests.send');
 Route::post('/friend-requests/pending', [ApiController::class, 'pendingFriendRequests'])->name('api.friendRequests.pending');

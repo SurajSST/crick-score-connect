@@ -21,10 +21,11 @@ return new class extends Migration
             $table->integer('wickets_taken')->default(0);
             $table->integer('maidens')->default(0);
             $table->decimal('economy_rate', 8, 2)->default(0);
-            $table->enum('status', ['bowling', 'not_bowling'])->default('not_bowling');
+            $table->boolean('is_bowling')->default(false);
             $table->timestamps();
         });
     }
+
 
     /**
      * Reverse the migrations.

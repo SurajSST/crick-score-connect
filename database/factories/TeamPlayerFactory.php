@@ -14,18 +14,25 @@ class TeamPlayerFactory extends Factory
      *
      * @var string
      */
-    protected $model = TeamPlayer::class;
+    protected $model = Teamplayer::class;
 
-    /**
-     * Define the model's default state.
-     *
-     * @return array
-     */
     public function definition()
     {
+        // Get the teams with IDs 1 and 2
+        $team1 = Team::find(1);
+        $team2 = Team::find(2);
+
+        // Get a random user
+        $user = User::inRandomOrder()->first();
+
+        // Define the team IDs
+        $teamId = $this->faker->randomElement([$team1->id, $team2->id]);
+
         return [
-            'team_id' => Team::all()->random()->id,
-            'user_id' => User::all()->random()->id,
+            'team_id' => $teamId,
+            'user_id' => $user->id,
         ];
     }
+
+
 }

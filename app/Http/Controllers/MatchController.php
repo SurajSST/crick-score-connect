@@ -9,6 +9,7 @@ use App\Models\Team;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
@@ -91,5 +92,50 @@ class MatchController extends Controller
     private function generateUniqueAlphaKey()
     {
         return chr(rand(65, 90)); // Generates a random uppercase letter (A-Z)
+    }
+
+
+    public function sendGameResponse(Request $request, $matchId)
+    {
+        $match = Matches::with(['team1.users', 'team2.users'])->findOrFail($matchId);
+
+        $homeTeam = $match->team1->users->map(function ($teamPlayer) {
+            $user = $teamPlayer->user;
+            return [
+                'id' => $teamPlayer->id,
+                'name' => $teamPlayer->name,
+                'username' => $teamPlayer->username,
+                'battingStats' => $teamPlayer->battingStats,
+                'bowlingStats' => $teamPlayer->bowlingStats,
+            ];
+        });
+
+        $awayTeam = $match->team2->users->map(function ($teamPlayer) {
+            $user = $teamPlayer->user;
+            return [
+                'id' => $teamPlayer->id,
+                'name' => $teamPlayer->name,
+                'username' => $teamPlayer->username,
+                'battingStats' => $teamPlayer->battingStats,
+                'bowlingStats' => $teamPlayer->bowlingStats,
+            ];
+        });
+
+        // Prepare the response
+        $response = [
+            "isGameFinished" => $match->isGameFinished,
+            "finishedMessage" => $match->finishedMessage,
+            "isGameCanceled" => $match->isGameCanceled,
+            "user_id" => $match->user_id,
+            "target" => $match->target,
+            "CRR" => $match->CRR,
+            "RRR" => $match->RRR,
+            "extras" => $match->extras,
+            "homeTeam" => $homeTeam,
+            "awayTeam" => $awayTeam
+        ];
+
+        // Return the response as JSON
+        return response()->json($response);
     }
 }

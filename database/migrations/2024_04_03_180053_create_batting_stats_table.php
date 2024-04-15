@@ -21,10 +21,13 @@ return new class extends Migration
             $table->integer('sixes')->default(0);
             $table->decimal('strike_rate', 8, 2)->default(0);
             $table->integer('balls_faced')->default(0);
-            $table->enum('status', ['striker', 'non-striker', 'bencher'])->default('bencher');
+            $table->boolean('is_striker')->default(false);
+            $table->boolean('is_non_striker')->default(false);
+            $table->boolean('is_bencher')->default(true);
             $table->timestamps();
         });
     }
+
 
     /**
      * Reverse the migrations.
