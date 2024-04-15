@@ -104,27 +104,24 @@ class MatchController extends Controller
                 'id' => $teamPlayer->id,
                 'name' => $teamPlayer->name,
                 'username' => $teamPlayer->username,
-                'matchBattingStat' => $teamPlayer->battingStats->map(function ($battingStat) {
-                    return [
-                        'runs' => $battingStat->runs_scored,
-                        'balls' => $battingStat->balls_faced,
-                        'fours' => $battingStat->fours,
-                        'sixes' => $battingStat->sixes,
-                    ];
-                }),
-                'matchBowlingStat' => $teamPlayer->bowlingStats->map(function ($bowlingStat) {
-                    return [
-                        'runs' => $bowlingStat->runs_conceded,
-                        'balls' => $bowlingStat->balls,
-                        'fours' => $bowlingStat->fours,
-                        'sixes' => $bowlingStat->sixes,
-                        'wides' => $bowlingStat->wides,
-                        'noBalls' => $bowlingStat->noBalls,
-                        'maidens' => $bowlingStat->maidens,
-                        'wickets' => $bowlingStat->wickets_taken,
-                        'overs' => $bowlingStat->overs_bowled,
-                    ];
-                }),
+                'matchBattingStat' => [
+                    'runs' => $teamPlayer->battingStats->sum('runs_scored'),
+                    'balls' => $teamPlayer->battingStats->sum('balls_faced'),
+                    'fours' => $teamPlayer->battingStats->sum('fours'),
+                    'sixes' => $teamPlayer->battingStats->sum('sixes'),
+                ],
+
+                'matchBowlingStat' => [
+                    'runs' => $teamPlayer->bowlingStats->sum('runs'),
+                    'balls' => $teamPlayer->bowlingStats->sum('balls'),
+                    'fours' => $teamPlayer->bowlingStats->sum('fours'),
+                    'sixes' => $teamPlayer->bowlingStats->sum('sixes'),
+                    'wides' => $teamPlayer->bowlingStats->sum('wides'),
+                    'noBalls' => $teamPlayer->bowlingStats->sum('noBalls'),
+                    'maidens' => $teamPlayer->bowlingStats->sum('maidens'),
+                    'wickets' => $teamPlayer->bowlingStats->sum('wickets'),
+                    'overs' => $teamPlayer->bowlingStats->sum('overs'),
+                ],
             ];
         });
 
@@ -133,27 +130,24 @@ class MatchController extends Controller
                 'id' => $teamPlayer->id,
                 'name' => $teamPlayer->name,
                 'username' => $teamPlayer->username,
-                'matchBattingStat' => $teamPlayer->battingStats->map(function ($battingStat) {
-                    return [
-                        'runs' => $battingStat->runs_scored,
-                        'balls' => $battingStat->balls_faced,
-                        'fours' => $battingStat->fours,
-                        'sixes' => $battingStat->sixes,
-                    ];
-                }),
-                'matchBowlingStat' => $teamPlayer->bowlingStats->map(function ($bowlingStat) {
-                    return [
-                        'runs' => $bowlingStat->runs_conceded,
-                        'balls' => $bowlingStat->balls,
-                        'fours' => $bowlingStat->fours,
-                        'sixes' => $bowlingStat->sixes,
-                        'wides' => $bowlingStat->wides,
-                        'noBalls' => $bowlingStat->noBalls,
-                        'maidens' => $bowlingStat->maidens,
-                        'wickets' => $bowlingStat->wickets_taken,
-                        'overs' => $bowlingStat->overs_bowled,
-                    ];
-                }),
+                'matchBattingStat' => [
+                    'runs' => $teamPlayer->battingStats->sum('runs_scored'),
+                    'balls' => $teamPlayer->battingStats->sum('balls_faced'),
+                    'fours' => $teamPlayer->battingStats->sum('fours'),
+                    'sixes' => $teamPlayer->battingStats->sum('sixes'),
+                ],
+
+                'matchBowlingStat' => [
+                    'runs' => $teamPlayer->bowlingStats->sum('runs'),
+                    'balls' => $teamPlayer->bowlingStats->sum('balls'),
+                    'fours' => $teamPlayer->bowlingStats->sum('fours'),
+                    'sixes' => $teamPlayer->bowlingStats->sum('sixes'),
+                    'wides' => $teamPlayer->bowlingStats->sum('wides'),
+                    'noBalls' => $teamPlayer->bowlingStats->sum('noBalls'),
+                    'maidens' => $teamPlayer->bowlingStats->sum('maidens'),
+                    'wickets' => $teamPlayer->bowlingStats->sum('wickets'),
+                    'overs' => $teamPlayer->bowlingStats->sum('overs'),
+                ],
             ];
         });
 

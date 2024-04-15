@@ -32,6 +32,7 @@ class MatchesFactory extends Factory
             'team2_id' => $team2->id,
             'date' => $this->faker->dateTime(),
             'time' => $this->faker->time(),
+            'key' => '#' . $this->faker->randomNumber(3) . $this->faker->randomLetter,
             'toss_winner_id' => $tossWinner->id,
             'toss_winner_batting_first' => $this->faker->boolean(), // Assuming the decision is random
             'venue' => $this->faker->city,
