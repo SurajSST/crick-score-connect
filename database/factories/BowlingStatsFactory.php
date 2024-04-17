@@ -17,12 +17,14 @@ class BowlingStatsFactory extends Factory
         $user = User::inRandomOrder()->first();
         $matchIds = [1, 2];
         $innings = Innings::factory()->create();
-
+        $balls = 6;
+        $overs_bowled = $balls / 6;
         return [
             'user_id' => $user->id,
             'match_id' => $this->faker->randomElement($matchIds),
             'innings_id' => $innings->id,
-            'overs_bowled' => $this->faker->randomFloat(2, 0, 50),
+            'balls' => $balls,
+            'overs_bowled' => $overs_bowled,
             'runs_conceded' => $this->faker->numberBetween(0, 100),
             'wickets_taken' => $this->faker->numberBetween(0, 10),
             'maidens' => $this->faker->numberBetween(0, 5),

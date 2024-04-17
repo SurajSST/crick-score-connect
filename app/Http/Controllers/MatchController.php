@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+use Ramsey\Uuid\Type\Decimal;
 
 class MatchController extends Controller
 {
@@ -129,7 +130,7 @@ class MatchController extends Controller
                 'noBalls' => $teamPlayer->bowlingStats->sum('noBalls'),
                 'maidens' => $teamPlayer->bowlingStats->sum('maidens'),
                 'wickets' => $teamPlayer->bowlingStats->sum('wickets'),
-                'overs' => $teamPlayer->bowlingStats->sum('overs'),
+                'overs' => (double) $teamPlayer->bowlingStats->sum('overs'),
             ];
 
             return [
@@ -162,7 +163,7 @@ class MatchController extends Controller
                 'noBalls' => $teamPlayer->bowlingStats->sum('noBalls'),
                 'maidens' => $teamPlayer->bowlingStats->sum('maidens'),
                 'wickets' => $teamPlayer->bowlingStats->sum('wickets'),
-                'overs' => $teamPlayer->bowlingStats->sum('overs'),
+                'overs' => (double) $teamPlayer->bowlingStats->sum('overs'),
             ];
 
             return [
