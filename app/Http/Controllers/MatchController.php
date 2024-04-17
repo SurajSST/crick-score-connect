@@ -7,6 +7,7 @@ use App\Models\BowlingStats;
 use App\Models\Innings;
 use App\Models\Matches;
 use App\Models\Team;
+use App\Models\TeamPlayer;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -42,23 +43,34 @@ class MatchController extends Controller
         DB::beginTransaction();
 
         try {
+            // Retrieve the user_id from the request
+            $userId = $request->input('user_id');
+
             // Create Team 1
             $team1 = new Team([
-                'user_id' => $request->input('user_id'),
+                'user_id' => $userId,
                 'name' => $request->input('team1.name'),
                 'type' => $request->input('team1.type'),
             ]);
             $team1->save();
-            $team1->players()->attach($request->input('team1.users'));
+
+            // Associate users with Team 1
+            foreach ($request->input('team1.users') as $userId) {
+                $team1->users()->attach($userId);
+            }
 
             // Create Team 2
             $team2 = new Team([
-                'user_id' => $request->input('user_id'),
+                'user_id' => $userId,
                 'name' => $request->input('team2.name'),
                 'type' => $request->input('team2.type'),
             ]);
             $team2->save();
-            $team2->players()->attach($request->input('team2.users'));
+
+            // Associate users with Team 2
+            foreach ($request->input('team2.users') as $userId) {
+                $team2->users()->attach($userId);
+            }
 
             // Determine the toss winner
             $tossWinnerId = $request->input('toss_winner') === 'team1' ? $team1->id : $team2->id;
@@ -68,7 +80,15 @@ class MatchController extends Controller
             $matchData['team1_id'] = $team1->id;
             $matchData['team2_id'] = $team2->id;
             $matchData['toss_winner_id'] = $tossWinnerId;
-
+            $matchData['user_id'] = $userId; // Include user_id in the match data
+            $extras = [
+                'byes' => 0,
+                'legByes' => 0,
+                'wide' => 0,
+                'noBall' => 0,
+                'penalty' => 0,
+            ];
+            $matchData['extras'] = $extras;
             $match = Matches::create($matchData);
 
             // Generate and assign a unique key
@@ -93,7 +113,7 @@ class MatchController extends Controller
 
     private function generateUniqueAlphaKey()
     {
-        return chr(rand(65, 90)); // Generates a random uppercase letter (A-Z)
+        return chr(rand(65, 90));
     }
 
 
@@ -130,7 +150,7 @@ class MatchController extends Controller
                 'noBalls' => $teamPlayer->bowlingStats->sum('noBalls'),
                 'maidens' => $teamPlayer->bowlingStats->sum('maidens'),
                 'wickets' => $teamPlayer->bowlingStats->sum('wickets'),
-                'overs' => (double) $teamPlayer->bowlingStats->sum('overs'),
+                'overs' => (float) $teamPlayer->bowlingStats->sum('overs'),
             ];
 
             return [
@@ -163,7 +183,7 @@ class MatchController extends Controller
                 'noBalls' => $teamPlayer->bowlingStats->sum('noBalls'),
                 'maidens' => $teamPlayer->bowlingStats->sum('maidens'),
                 'wickets' => $teamPlayer->bowlingStats->sum('wickets'),
-                'overs' => (double) $teamPlayer->bowlingStats->sum('overs'),
+                'overs' => (float) $teamPlayer->bowlingStats->sum('overs'),
             ];
 
             return [
@@ -193,10 +213,10 @@ class MatchController extends Controller
             "awayTeamName" => $match->team2->name,
             "isFirstInning" => $inningsCount == 1 ? true : false,
             "firstInningTotalRun" => $firstInningTotalRuns,
-            "firstInningTotalOver" => (double) $firstInningTotalBalls / 6,
+            "firstInningTotalOver" => (float) $firstInningTotalBalls / 6,
             "firstInningTotalWicket" => $firstInningTotalWickets,
             "secondInningTotalRun" => $secondInningTotalRuns,
-            "secondInningTotalOver" => (double) $secondInningTotalBalls / 6,
+            "secondInningTotalOver" => (float) $secondInningTotalBalls / 6,
             "secondInningTotalWicket" => $secondInningTotalWickets,
 
             "homeTeam" => $homeTeam,

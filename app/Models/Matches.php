@@ -13,12 +13,14 @@ class Matches extends Model
         'team1_id',
         'team2_id',
         'date',
+        'user_id',
         'time',
         'match_result',
         'toss_winner_id',
         'venue',
         'overs',
         'players_per_team',
+        'extras'
     ];
     protected $casts = [
         'extras' => 'array',
