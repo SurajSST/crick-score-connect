@@ -10,6 +10,7 @@ use App\Models\MatchPayment;
 use App\Models\Team;
 use App\Models\TeamPlayer;
 use App\Models\User;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Response;
@@ -191,19 +192,46 @@ class MatchController extends Controller
             $battingTeamId = null;
             $bowlingTeamId = null;
 
+            // Get the match
+            $match = Matches::findOrFail($matchId);
+
+            // Debug: Check if the match is fetched correctly
+            dd($match);
+
             // Loop through the team data to find the batting and bowling teams
             foreach ($teamData as $player) {
-                if ($player['striker']) {
-                    // The player is a striker, so their team ID is the batting team ID
-                    $battingTeamId = $player['id'];
-                }
-                if ($player['bowler']) {
-                    // The player is a bowler, so their team ID is the bowling team ID
-                    $bowlingTeamId = $player['id'];
+                // Get the user ID of the player
+                $userId = $player['id'];
+
+                // Debug: Print the player ID for debugging
+                echo "Player ID: $userId\n";
+
+                // Find the team ID to which the player belongs in the match
+                $team = $match->teams()->whereHas('players', function ($query) use ($userId) {
+                    $query->where('user_id', $userId);
+                })->first();
+
+                // Debug: Print the team found for debugging
+                dd($team);
+
+                if ($team) {
+                    // Check if the player is a striker or bowler
+                    if ($player['striker']) {
+                        // The player is a striker, so their team ID is the batting team ID
+                        $battingTeamId = $team->id;
+                    }
+                    if ($player['bowler']) {
+                        // The player is a bowler, so their team ID is the bowling team ID
+                        $bowlingTeamId = $team->id;
+                    }
                 }
             }
 
+            // Debug: Print the retrieved team IDs for debugging
+            echo "Batting Team ID: $battingTeamId\n";
+            echo "Bowling Team ID: $bowlingTeamId\n";
 
+            // Create the innings record if both batting and bowling team IDs are found
             Innings::create([
                 'match_id' => $matchId,
                 'batting_team_id' => $battingTeamId,
@@ -342,5 +370,25 @@ class MatchController extends Controller
         ];
 
         return response()->json($response);
+    }
+
+
+    public function paymentStore(Request $request)
+    {
+        try {
+            // Validate request data
+            $validatedData = $request->validate([
+                'transaction_id' => 'required|string',
+                'user_id' => 'required|integer',
+                'match_id' => 'required|integer',
+            ]);
+
+            MatchPayment::create($validatedData);
+
+            return response()->json(['message' => 'Payment data stored successfully'], 200);
+        } catch (Exception $e) {
+
+            return response()->json(['error' => 'Failed to store payment data. Unexpected error occurred.'], 500);
+        }
     }
 }

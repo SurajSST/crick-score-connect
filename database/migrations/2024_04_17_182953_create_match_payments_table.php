@@ -13,14 +13,14 @@ return new class extends Migration
     {
         Schema::create('match_payments', function (Blueprint $table) {
             $table->id();
-        $table->unsignedBigInteger('user_id');
-        $table->unsignedBigInteger('match_id');
-        $table->string('transaction_id')->nullable();
-        $table->timestamps();
+            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('match_id');
+            $table->string('transaction_id')->nullable();
+            $table->timestamps();
 
-        // Define foreign key constraints
-        $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-        $table->foreign('match_id')->references('id')->on('matches')->onDelete('cascade');
+            // Define foreign key constraints
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('match_id')->references('id')->on('matches')->onDelete('cascade');
         });
     }
 

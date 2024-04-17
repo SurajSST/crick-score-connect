@@ -25,6 +25,10 @@ class Matches extends Model
     protected $casts = [
         'extras' => 'array',
     ];
+    public function teams()
+    {
+        return $this->belongsTo(Team::class);
+    }
     public function team1()
     {
         return $this->belongsTo(Team::class, 'team1_id');
