@@ -24,8 +24,7 @@ class DatabaseSeeder extends Seeder
 
     //     Matches::factory(5)->create();
     //     Innings::factory(10)->create();
-    //     FriendRequest::factory(10)->create();
-    //     Friendship::factory()->count(30)->create();
+
     //     BattingStats::factory(10)->create();
     //     BowlingStats::factory(10)->create();
     // }
@@ -39,5 +38,7 @@ class DatabaseSeeder extends Seeder
         \App\Models\Matches::factory(10)->create();
         \App\Models\BattingStats::factory(50)->create();
         \App\Models\BowlingStats::factory(50)->create();
+        FriendRequest::factory(10)->create();
+        Friendship::factory()->count(30)->create();
     }
 }

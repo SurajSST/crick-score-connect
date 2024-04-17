@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\BattingStats;
 use App\Models\BowlingStats;
+use App\Models\Innings;
 use App\Models\Matches;
 use App\Models\Team;
 use App\Models\User;
@@ -98,6 +99,18 @@ class MatchController extends Controller
     public function sendGameResponse(Request $request, $matchId)
     {
         $match = Matches::with(['team1.users.battingStats', 'team2.users.battingStats', 'team1.users.bowlingStats', 'team2.users.bowlingStats'])->findOrFail($matchId);
+        $firstInning = Innings::where('match_id', $matchId)->where('innings_number', 1)->first();
+        $secondInning = Innings::where('match_id', $matchId)->where('innings_number', 2)->first();
+
+        // Calculate total runs, overs, and wickets for the first inning
+        $firstInningTotalRuns = $firstInning ? $firstInning->battingStats->sum('runs_scored') : 0;
+        $firstInningTotalBalls = $firstInning ? $firstInning->bowlingStats->sum('balls') : 0;
+        $firstInningTotalWickets = $firstInning ? $firstInning->bowlingStats->sum('wickets') : 0;
+
+        // Calculate total runs, overs, and wickets for the second inning
+        $secondInningTotalRuns = $secondInning ? $secondInning->battingStats->sum('runs_scored') : 0;
+        $secondInningTotalBalls = $secondInning ? $secondInning->bowlingStats->sum('balls') : 0;
+        $secondInningTotalWickets = $secondInning ? $secondInning->bowlingStats->sum('wickets') : 0;
 
         $homeTeam = $match->team1->users->map(function ($teamPlayer) {
             $battingStats = $teamPlayer->battingStats->isEmpty() ? null : [
@@ -167,15 +180,27 @@ class MatchController extends Controller
 
         $response = [
             "isGameFinished" => (bool) $match->isGameFinished,
-            "finishedMessage" => $match->finishedMessage ?? 'Default message', // Default message if finishedMessage is null
+            "finishedMessage" => $match->finishedMessage ?? 'Default message',
             "isGameCanceled" => (bool) $match->isGameCanceled,
             "user_id" => $match->user_id,
             "target" => $match->target,
             "CRR" => $match->CRR,
             "RRR" => $match->RRR,
             "extras" => $match->extras,
+
+            "homeTeamName" => $match->team1->name,
+            "awayTeamName" => $match->team2->name,
+            "isFirstInning" => !is_null($firstInning),
+
+            "firstInningTotalRun" => $firstInningTotalRuns,
+            "firstInningTotalOver" => $firstInningTotalBalls / 6, // Assuming 6 balls per over
+            "firstInningTotalWicket" => $firstInningTotalWickets,
+            "secondInningTotalRun" => $secondInningTotalRuns,
+            "secondInningTotalOver" => $secondInningTotalBalls / 6, // Assuming 6 balls per over
+            "secondInningTotalWicket" => $secondInningTotalWickets,
+
             "homeTeam" => $homeTeam,
-            "awayTeam" => $awayTeam
+            "awayTeam" => $awayTeam,
         ];
 
         return response()->json($response);

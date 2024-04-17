@@ -30,7 +30,8 @@ return new class extends Migration
             $table->integer('target')->default(0);
             $table->decimal('CRR', 8, 2)->default(0);
             $table->decimal('RRR', 8, 2)->default(0);
-            $table->json('extras')->default('{"byes": 0, "legByes": 0, "wide": 0, "noBall": 0, "penalty": 0}');
+            $table->json('extras');
+            // $table->json('extras')->default('{"byes": 0, "legByes": 0, "wide": 0, "noBall": 0, "penalty": 0}');
             $table->timestamps();
         });
     }

@@ -39,6 +39,13 @@ class MatchesFactory extends Factory
             'overs' => $this->faker->randomDigit,
             'players_per_team' => $this->faker->randomDigit,
             'user_id' => User::inRandomOrder()->first()->id,
+            'extras' => [
+                'byes' => 0,
+                'legByes' => 0,
+                'wide' => 0,
+                'noBall' => 0,
+                'penalty' => 0,
+            ]
         ];
     }
 }
