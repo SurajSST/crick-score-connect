@@ -150,7 +150,7 @@ class MatchController extends Controller
                 'noBalls' => $teamPlayer->bowlingStats->sum('noBalls'),
                 'maidens' => $teamPlayer->bowlingStats->sum('maidens'),
                 'wickets' => $teamPlayer->bowlingStats->sum('wickets'),
-                'overs' => (float) $teamPlayer->bowlingStats->sum('overs'),
+                'overs' => (double) $teamPlayer->bowlingStats->sum('overs'),
             ];
 
             return [
@@ -183,7 +183,7 @@ class MatchController extends Controller
                 'noBalls' => $teamPlayer->bowlingStats->sum('noBalls'),
                 'maidens' => $teamPlayer->bowlingStats->sum('maidens'),
                 'wickets' => $teamPlayer->bowlingStats->sum('wickets'),
-                'overs' => (float) $teamPlayer->bowlingStats->sum('overs'),
+                'overs' => (double) $teamPlayer->bowlingStats->sum('overs'),
             ];
 
             return [
@@ -213,10 +213,10 @@ class MatchController extends Controller
             "awayTeamName" => $match->team2->name,
             "isFirstInning" => $inningsCount == 1 ? true : false,
             "firstInningTotalRun" => $firstInningTotalRuns,
-            "firstInningTotalOver" => (float) $firstInningTotalBalls / 6,
+            "firstInningTotalOver" => (double) $firstInningTotalBalls / 6,
             "firstInningTotalWicket" => $firstInningTotalWickets,
             "secondInningTotalRun" => $secondInningTotalRuns,
-            "secondInningTotalOver" => (float) $secondInningTotalBalls / 6,
+            "secondInningTotalOver" => (double) $secondInningTotalBalls / 6,
             "secondInningTotalWicket" => $secondInningTotalWickets,
 
             "homeTeam" => $homeTeam,
