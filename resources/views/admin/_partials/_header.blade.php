@@ -2,7 +2,8 @@
     <div class="header-content">
         <nav class="navbar navbar-expand">
             <div class="collapse navbar-collapse justify-content-between">
-                <div class="header-left">
+            <a href="{{ route('storage.link') }}" class="btn btn-primary">Storage Link</a>
+                <!-- <div class="header-left">
                     <div class="dashboard_bar">
                         <div class="input-group search-area d-lg-inline-flex d-none">
                             <input type="text" class="form-control" placeholder="Search here...">
@@ -11,7 +12,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> -->
                 <ul class="navbar-nav header-right">
                     <li class="nav-item dropdown header-profile">
                         <a class="nav-link" href="javascript:void(0)" role="button" data-toggle="dropdown">
