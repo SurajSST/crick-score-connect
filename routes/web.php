@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Artisan;
 Route::redirect('/', '/admin');
 
 Route::redirect('/admin', '/admin/dashboard');
+Route::redirect('/dashboard', '/admin/dashboard');
 Route::get('/storage-link', function () {
     Artisan::call('storage:link');
     return redirect()->back()->with('success', 'Storage Linked Successfully');
@@ -20,9 +21,7 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+
 
     Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [AdminController::class, 'index'])->name('index');
