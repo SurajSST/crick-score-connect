@@ -375,13 +375,16 @@ class MatchController extends Controller
 
     public function paymentStore(Request $request)
     {
-
+        // Validating incoming request data
         $validatedData = $request->validate([
             'transaction_id' => 'required|string',
             'user_id' => 'required|exists:users,id',
-            'match_id' => 'required|exists:matches,id',
+            'key' => 'required|exists:matches,key',
         ]);
 
+        $matchId = Matches::where('key', $validatedData['key'])->value('id');
+
+        $validatedData['match_id'] = $matchId;
 
         MatchPayment::create($validatedData);
 
