@@ -8,4 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class MatchPayment extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'transaction_id',
+        'user_id',
+        'match_id'
+    ];
 }
