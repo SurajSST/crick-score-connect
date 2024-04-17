@@ -101,7 +101,7 @@ class MatchController extends Controller
         $match = Matches::with(['team1.users.battingStats', 'team2.users.battingStats', 'team1.users.bowlingStats', 'team2.users.bowlingStats'])->findOrFail($matchId);
         $firstInning = Innings::where('match_id', $matchId)->where('innings_number', 1)->first();
         $secondInning = Innings::where('match_id', $matchId)->where('innings_number', 2)->first();
-
+        $inningsCount = Innings::where('match_id', $matchId)->count();
         // Calculate total runs, overs, and wickets for the first inning
         $firstInningTotalRuns = $firstInning ? $firstInning->battingStats->sum('runs_scored') : 0;
         $firstInningTotalBalls = $firstInning ? $firstInning->bowlingStats->sum('balls') : 0;
@@ -190,13 +190,12 @@ class MatchController extends Controller
 
             "homeTeamName" => $match->team1->name,
             "awayTeamName" => $match->team2->name,
-            "isFirstInning" => !is_null($firstInning),
-
+            "isFirstInning" => $inningsCount == 1 ? true : false,
             "firstInningTotalRun" => $firstInningTotalRuns,
-            "firstInningTotalOver" => $firstInningTotalBalls / 6, // Assuming 6 balls per over
+            "firstInningTotalOver" => (double) $firstInningTotalBalls / 6,
             "firstInningTotalWicket" => $firstInningTotalWickets,
             "secondInningTotalRun" => $secondInningTotalRuns,
-            "secondInningTotalOver" => $secondInningTotalBalls / 6, // Assuming 6 balls per over
+            "secondInningTotalOver" => (double) $secondInningTotalBalls / 6,
             "secondInningTotalWicket" => $secondInningTotalWickets,
 
             "homeTeam" => $homeTeam,
