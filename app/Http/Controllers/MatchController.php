@@ -136,57 +136,90 @@ class MatchController extends Controller
 
         $match->update($matchDetails);
 
+        // Update extras
         $match->update(['extras' => json_encode($data['extras'])]);
 
-        // Update batting and bowling stats for home team players
-        $homeTeamPlayers = $data['homeTeam'];
-        return response()->json($homeTeamPlayers);
-        foreach ($homeTeamPlayers as $player) {
-            $playerId = $player['id'];
+        // Update batting and bowling stats for both teams
+        $this->updateTeamStats($matchId, $data['homeTeam'], $data['isFirstInning']);
+        $this->updateTeamStats($matchId, $data['awayTeam'], !$data['isFirstInning']);
 
-            // Update batting stats
-            $battingStats = $player['matchBattingStat'];
-            $match->battingStats()->updateOrCreate(
-                ['user_id' => $playerId],
-                $battingStats
-            );
-
-            // Update bowling stats
-            $bowlingStats = $player['matchBowlingStat'];
-            $match->bowlingStats()->updateOrCreate(
-                ['user_id' => $playerId],
-                $bowlingStats
-            );
+        // Create innings record if isFirstInning is true
+        if ($data['isFirstInning']) {
+            $this->createInningsRecord($matchId, $data['homeTeam'], '1st');
+        } else {
+            // Create innings record for 2nd innings
+            $this->createInningsRecord($matchId, $data['awayTeam'], '2nd');
         }
 
-        $awayTeamPlayers = $data['awayTeam'];
-
-        foreach ($awayTeamPlayers as $player) {
-            $playerId = $player['id'];
-
-            // Update batting stats
-            $battingStats = $player['matchBattingStat'];
-            $match->battingStats()->updateOrCreate(
-                ['user_id' => $playerId],
-                $battingStats
-            );
-
-            // Update bowling stats
-            $bowlingStats = $player['matchBowlingStat'];
-            $match->bowlingStats()->updateOrCreate(
-                ['user_id' => $playerId],
-                $bowlingStats
-            );
-        }
-
-        // Return success or error message
+        // Return success message
         return response()->json(['message' => 'Game data updated successfully'], 200);
+    }
+
+    private function updateTeamStats($matchId, $teamData, $isFirstInning)
+    {
+        foreach ($teamData as $player) {
+            if ($player['striker'] || $player['bowler']) { // Check if the player is a striker or bowler
+                $playerId = $player['id'];
+
+                // Update batting stats if striker
+                if ($player['striker']) {
+                    $battingStats = $player['matchBattingStat'];
+                    $battingStats['innings_id'] = $isFirstInning ? 1 : 2;
+                    BattingStats::updateOrCreate(
+                        ['user_id' => $playerId, 'match_id' => $matchId],
+                        $battingStats
+                    );
+                }
+
+                // Update bowling stats if bowler
+                if ($player['bowler']) {
+                    $bowlingStats = $player['matchBowlingStat'];
+                    $bowlingStats['innings_id'] = $isFirstInning ? 1 : 2;
+                    BowlingStats::updateOrCreate(
+                        ['user_id' => $playerId, 'match_id' => $matchId],
+                        $bowlingStats
+                    );
+                }
+            }
+        }
+    }
+
+    private function createInningsRecord($matchId, $teamData, $inningsNumber)
+    {
+        if (!empty($teamData)) {
+            // Initialize variables to store batting and bowling team IDs
+            $battingTeamId = null;
+            $bowlingTeamId = null;
+
+            // Loop through the team data to find the batting and bowling teams
+            foreach ($teamData as $player) {
+                if ($player['striker']) {
+                    // The player is a striker, so their team ID is the batting team ID
+                    $battingTeamId = $player['id'];
+                }
+                if ($player['bowler']) {
+                    // The player is a bowler, so their team ID is the bowling team ID
+                    $bowlingTeamId = $player['id'];
+                }
+            }
+
+
+            Innings::create([
+                'match_id' => $matchId,
+                'batting_team_id' => $battingTeamId,
+                'bowling_team_id' => $bowlingTeamId,
+                'innings_number' => $inningsNumber,
+            ]);
+        }
     }
 
 
 
 
-    public function sendGameResponse(Request $request, $matchId)
+
+
+
+    public function sendGameResponse(Request $request)
     {
 
         $userId = $request->input('user_id');
