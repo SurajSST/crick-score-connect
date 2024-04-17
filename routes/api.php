@@ -30,6 +30,12 @@ Route::post('friend-requests/{requestId}/reject', [ApiController::class, 'reject
 Route::get('users/{userId}/friend-requests', [ApiController::class, 'searchFriendRequests'])->name('api.friend-requests.search');
 Route::get('users/{userId}/friends', [ApiController::class, 'searchFriendList'])->name('api.friends.search');
 
+
+
+Route::post('/update-game-data', [MatchController::class, 'updateGameData']);
+
+
+
 Route::apiResource('teams', TeamController::class);
 Route::apiResource('team-players', TeamController::class);
 Route::apiResource('matches', MatchesController::class);

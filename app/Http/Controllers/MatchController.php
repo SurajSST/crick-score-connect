@@ -6,6 +6,7 @@ use App\Models\BattingStats;
 use App\Models\BowlingStats;
 use App\Models\Innings;
 use App\Models\Matches;
+use App\Models\MatchPayment;
 use App\Models\Team;
 use App\Models\TeamPlayer;
 use App\Models\User;
@@ -80,7 +81,7 @@ class MatchController extends Controller
             $matchData['team1_id'] = $team1->id;
             $matchData['team2_id'] = $team2->id;
             $matchData['toss_winner_id'] = $tossWinnerId;
-            $matchData['user_id'] = $userId; // Include user_id in the match data
+            $matchData['user_id'] = $userId;
             $extras = [
                 'byes' => 0,
                 'legByes' => 0,
@@ -117,8 +118,92 @@ class MatchController extends Controller
     }
 
 
+    public function updateGameData(Request $request)
+    {
+        $data = $request->json()->all();
+
+        $matchId = $data['match_id'];
+        $match = Matches::findOrFail($matchId);
+
+        $matchDetails = [
+            'isGameFinished' => $data['isGameFinished'],
+            'finishedMessage' => $data['finishedMessage'],
+            'isGameCanceled' => $data['isGameCanceled'],
+            'target' => $data['target'],
+            'CRR' => $data['CRR'],
+            'RRR' => $data['RRR'],
+        ];
+
+        $match->update($matchDetails);
+
+        $match->update(['extras' => json_encode($data['extras'])]);
+
+        // Update batting and bowling stats for home team players
+        $homeTeamPlayers = $data['homeTeam'];
+        return response()->json($homeTeamPlayers);
+        foreach ($homeTeamPlayers as $player) {
+            $playerId = $player['id'];
+
+            // Update batting stats
+            $battingStats = $player['matchBattingStat'];
+            $match->battingStats()->updateOrCreate(
+                ['user_id' => $playerId],
+                $battingStats
+            );
+
+            // Update bowling stats
+            $bowlingStats = $player['matchBowlingStat'];
+            $match->bowlingStats()->updateOrCreate(
+                ['user_id' => $playerId],
+                $bowlingStats
+            );
+        }
+
+        $awayTeamPlayers = $data['awayTeam'];
+
+        foreach ($awayTeamPlayers as $player) {
+            $playerId = $player['id'];
+
+            // Update batting stats
+            $battingStats = $player['matchBattingStat'];
+            $match->battingStats()->updateOrCreate(
+                ['user_id' => $playerId],
+                $battingStats
+            );
+
+            // Update bowling stats
+            $bowlingStats = $player['matchBowlingStat'];
+            $match->bowlingStats()->updateOrCreate(
+                ['user_id' => $playerId],
+                $bowlingStats
+            );
+        }
+
+        // Return success or error message
+        return response()->json(['message' => 'Game data updated successfully'], 200);
+    }
+
+
+
+
     public function sendGameResponse(Request $request, $matchId)
     {
+
+        $userId = $request->input('user_id');
+        $key = $request->input('key');
+
+        $matchId = Matches::where('key', $key)->value('id');
+
+        if (!$matchId) {
+            return response()->json(['error' => 'Invalid match key.'], 404);
+        }
+        $paymentExists = MatchPayment::where('match_id', $matchId)
+            ->where('user_id', $userId)
+            ->exists();
+
+        if (!$paymentExists) {
+            return response()->json(['error' => 'You have not paid for this match.'], 403);
+        }
         $match = Matches::with(['team1.users.battingStats', 'team2.users.battingStats', 'team1.users.bowlingStats', 'team2.users.bowlingStats'])->findOrFail($matchId);
         $firstInning = Innings::where('match_id', $matchId)->where('innings_number', 1)->first();
         $secondInning = Innings::where('match_id', $matchId)->where('innings_number', 2)->first();
@@ -150,7 +235,7 @@ class MatchController extends Controller
                 'noBalls' => $teamPlayer->bowlingStats->sum('noBalls'),
                 'maidens' => $teamPlayer->bowlingStats->sum('maidens'),
                 'wickets' => $teamPlayer->bowlingStats->sum('wickets'),
-                'overs' => (double) $teamPlayer->bowlingStats->sum('overs'),
+                'overs' => (float) $teamPlayer->bowlingStats->sum('overs'),
             ];
 
             return [
@@ -183,7 +268,7 @@ class MatchController extends Controller
                 'noBalls' => $teamPlayer->bowlingStats->sum('noBalls'),
                 'maidens' => $teamPlayer->bowlingStats->sum('maidens'),
                 'wickets' => $teamPlayer->bowlingStats->sum('wickets'),
-                'overs' => (double) $teamPlayer->bowlingStats->sum('overs'),
+                'overs' => (float) $teamPlayer->bowlingStats->sum('overs'),
             ];
 
             return [
@@ -213,10 +298,10 @@ class MatchController extends Controller
             "awayTeamName" => $match->team2->name,
             "isFirstInning" => $inningsCount == 1 ? true : false,
             "firstInningTotalRun" => $firstInningTotalRuns,
-            "firstInningTotalOver" => (double) $firstInningTotalBalls / 6,
+            "firstInningTotalOver" => (float) $firstInningTotalBalls / 6,
             "firstInningTotalWicket" => $firstInningTotalWickets,
             "secondInningTotalRun" => $secondInningTotalRuns,
-            "secondInningTotalOver" => (double) $secondInningTotalBalls / 6,
+            "secondInningTotalOver" => (float) $secondInningTotalBalls / 6,
             "secondInningTotalWicket" => $secondInningTotalWickets,
 
             "homeTeam" => $homeTeam,

@@ -1,5 +1,5 @@
 <!-- ... other meta tags ... -->
-<title>@yield('title')</title>
+<title>Admin @yield('title')</title>
 <!-- Favicon icon -->
 <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('backend/images/favicon.png') }}">
 <link href="{{ asset('backend/vendor/jqvmap/css/jqvmap.min.css') }}" rel="stylesheet">

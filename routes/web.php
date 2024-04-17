@@ -7,6 +7,10 @@ use Illuminate\Support\Facades\Artisan;
 // Route::get('/', function () {
 //     return view('welcome');
 // });
+
+Route::get('/test', function () {
+    return view('test');
+});
 Route::redirect('/', '/admin');
 
 Route::redirect('/admin', '/admin/dashboard');
