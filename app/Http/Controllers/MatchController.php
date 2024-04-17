@@ -375,20 +375,16 @@ class MatchController extends Controller
 
     public function paymentStore(Request $request)
     {
-        try {
-            // Validate request data
-            $validatedData = $request->validate([
-                'transaction_id' => 'required|string',
-                'user_id' => 'required|integer',
-                'match_id' => 'required|integer',
-            ]);
 
-            MatchPayment::create($validatedData);
+        $validatedData = $request->validate([
+            'transaction_id' => 'required|string',
+            'user_id' => 'required|exists:users,id',
+            'match_id' => 'required|exists:matches,id',
+        ]);
 
-            return response()->json(['message' => 'Payment data stored successfully'], 200);
-        } catch (Exception $e) {
 
-            return response()->json(['error' => 'Failed to store payment data. Unexpected error occurred.'], 500);
-        }
+        MatchPayment::create($validatedData);
+
+        return response()->json(['message' => 'Payment data stored successfully'], 200);
     }
 }
