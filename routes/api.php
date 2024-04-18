@@ -33,7 +33,7 @@ Route::get('users/{userId}/friend-requests', [ApiController::class, 'searchFrien
 Route::get('users/{userId}/friends', [ApiController::class, 'searchFriendList'])->name('api.friends.search');
 
 
-Route::post('/games-data', [MatchController::class, 'sendGameResponse']);
+Route::post('/games-data', [MatchController::class, 'sendResponse']);
 
 Route::post('/update-game-data', [MatchController::class, 'updateGameData']);
 Route::post('/send-all-paid-matches-data', [MatchController::class, 'sendAllPaidMatchesData']);
