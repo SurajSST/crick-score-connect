@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\BattingStats;
 use App\Models\BowlingStats;
+use App\Models\Friendship;
 use App\Models\Innings;
 use App\Models\Matches;
 use App\Models\MatchPayment;
@@ -389,5 +390,31 @@ class MatchController extends Controller
         MatchPayment::create($validatedData);
 
         return response()->json(['message' => 'Payment data stored successfully'], 200);
+    }
+
+    public function getUserSummary($userId)
+    {
+        try {
+            $userExists = User::where('id', $userId)->exists();
+
+            if (!$userExists) {
+                return response()->json(['error' => 'User not found'], 404);
+            }
+
+            $totalFriendships = Friendship::where('user1_id', $userId)
+                ->orWhere('user2_id', $userId)
+                ->count();
+
+            $totalMatches = Matches::where('user_id', $userId)->count();
+
+            $summary = [
+                'Total_friend' => $totalFriendships,
+                'Total_match_played' => $totalMatches
+            ];
+
+            return response()->json($summary, 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
     }
 }

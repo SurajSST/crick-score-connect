@@ -21,7 +21,7 @@ return new class extends Migration
             $table->foreignId('toss_winner_id')->constrained('teams')->onDelete('cascade');
             $table->boolean('toss_winner_batting_first')->default(true); // New column to determine if the toss winner decides to bat first
             $table->string('venue');
-            $table->integer('overs');
+            $table->decimal('overs', 8, 2)->default(0);
             $table->integer('players_per_team');
             $table->boolean('isGameFinished')->default(false);
             $table->string('finishedMessage')->nullable()->default('Message');
