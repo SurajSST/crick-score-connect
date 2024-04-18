@@ -394,27 +394,26 @@ class MatchController extends Controller
 
     public function getUserSummary($userId)
     {
-        try {
-            $userExists = User::where('id', $userId)->exists();
+        $userExists = User::where('id', $userId)->exists();
 
-            if (!$userExists) {
-                return response()->json(['error' => 'User not found'], 404);
-            }
-
-            $totalFriendships = Friendship::where('user1_id', $userId)
-                ->orWhere('user2_id', $userId)
-                ->count();
-
-            $totalMatches = Matches::where('user_id', $userId)->count();
-
-            $summary = [
-                'Total_friend' => $totalFriendships,
-                'Total_match_played' => $totalMatches
-            ];
-
-            return response()->json($summary, 200);
-        } catch (\Exception $e) {
+        if (!$userExists) {
             return response()->json(['error' => 'User not found'], 404);
         }
+
+        $totalFriendships = Friendship::where('user1_id', $userId)
+            ->orWhere('user2_id', $userId)
+            ->count();
+
+        // Count the total number of unique matches played by the user from batting_stats and bowling_stats tables
+        $totalBattingMatches = BattingStats::where('user_id', $userId)->distinct()->pluck('match_id')->toArray();
+        $totalBowlingMatches = BowlingStats::where('user_id', $userId)->distinct()->pluck('match_id')->toArray();
+        $totalMatchesPlayed = count(array_unique(array_merge($totalBattingMatches, $totalBowlingMatches)));
+
+        $summary = [
+            'Total_friend' => $totalFriendships,
+            'Total_match_played' => $totalMatchesPlayed
+        ];
+
+        return response()->json($summary, 200);
     }
 }
