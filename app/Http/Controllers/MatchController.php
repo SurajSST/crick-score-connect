@@ -137,7 +137,9 @@ class MatchController extends Controller
         ];
 
         $match->update($matchDetails);
-        $match->update(['extras' => json_encode($data['extras'])]);
+        $jsonData = json_encode($data['extras'], JSON_UNESCAPED_SLASHES);
+        $decodedData = json_decode($jsonData, true); // Decode to associative array
+        $match->update(['extras' => $decodedData]);  // Update with decoded data
 
         $this->updateTeamStats($matchId, $data['homeTeam'], $data['team1_id'], true);
         $this->updateTeamStats($matchId, $data['awayTeam'], $data['team2_id'], false);
@@ -204,9 +206,9 @@ class MatchController extends Controller
             ->where('user_id', $userId)
             ->exists();
 
-        // if (!$paymentExists) {
-        //     return response()->json(['error' => 'You have not paid for this match.'], 403);
-        // }
+        if (!$paymentExists) {
+            return response()->json(['error' => 'You have not paid for this match.'], 403);
+        }
         $match = Matches::with(['team1.users.battingStats', 'team2.users.battingStats', 'team1.users.bowlingStats', 'team2.users.bowlingStats'])->findOrFail($matchId);
         $firstInning = Innings::where('match_id', $matchId)->where('innings_number', 1)->first();
         $secondInning = Innings::where('match_id', $matchId)->where('innings_number', 2)->first();
