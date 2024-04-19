@@ -301,7 +301,7 @@ class MatchController extends Controller
                     'noBalls' => $bowlingStats ? (int) $bowlingStats->noBalls : 0,
                     'maidens' => $bowlingStats ? (int) $bowlingStats->maidens : 0,
                     'wickets' => $bowlingStats ? (int) $bowlingStats->wickets_taken : 0,
-                    'overs' => $bowlingStats ? (float) $bowlingStats->overs : 0,
+                    'overs' => $bowlingStats ? (float) $bowlingStats->overs_bowled : 0,
                 ],
             ];
         });
