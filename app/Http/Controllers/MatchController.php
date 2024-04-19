@@ -334,22 +334,24 @@ class MatchController extends Controller
                 'bowler' => $bowlingStats ? (bool) $bowlingStats->is_bowling : false,
                 'out' => $battingStats ? (bool) $battingStats->out : false,
                 'matchBattingStat' => [
-                    'runs' => $battingStats ? $battingStats->runs_scored : 0,
-                    'balls' => $battingStats ? $battingStats->balls_faced : 0,
-                    'fours' => $battingStats ? $battingStats->fours : 0,
-                    'sixes' => $battingStats ? $battingStats->sixes : 0,
+                    'runs' => $battingStats ? (int)$battingStats->runs_scored : 0,
+                    'balls' => $battingStats ? (int)$battingStats->balls_faced : 0,
+                    'fours' => $battingStats ? (int)$battingStats->fours : 0,
+                    'sixes' => $battingStats ? (int)$battingStats->sixes : 0,
                 ],
+
                 'matchBowlingStat' => [
-                    'runs' => $bowlingStats ? $bowlingStats->runs : 0,
-                    'balls' => $bowlingStats ? $bowlingStats->balls : 0,
-                    'fours' => $bowlingStats ? $bowlingStats->fours : 0,
-                    'sixes' => $bowlingStats ? $bowlingStats->sixes : 0,
-                    'wides' => $bowlingStats ? $bowlingStats->wides : 0,
-                    'noBalls' => $bowlingStats ? $bowlingStats->noBalls : 0,
-                    'maidens' => $bowlingStats ? $bowlingStats->maidens : 0,
-                    'wickets' => $bowlingStats ? $bowlingStats->wickets : 0,
-                    'overs' => $bowlingStats ? (float) $bowlingStats->overs : 0,
+                    'runs' => $bowlingStats ? (int)$bowlingStats->runs_conceded : 0,
+                    'balls' => $bowlingStats ? (int)$bowlingStats->balls : 0,
+                    'fours' => $bowlingStats ? (int)$bowlingStats->fours : 0,
+                    'sixes' => $bowlingStats ? (int)$bowlingStats->sixes : 0,
+                    'wides' => $bowlingStats ? (int)$bowlingStats->wides : 0,
+                    'noBalls' => $bowlingStats ? (int)$bowlingStats->noBalls : 0,
+                    'maidens' => $bowlingStats ? (int)$bowlingStats->maidens : 0,
+                    'wickets' => $bowlingStats ? (int)$bowlingStats->wickets_taken : 0,
+                    'overs' => $bowlingStats ? (float)$bowlingStats->overs_bowled : 0.0,
                 ],
+
             ];
         });
 
