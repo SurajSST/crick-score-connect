@@ -299,10 +299,10 @@ class MatchController extends Controller
                 'bowler' => $bowlingStats ? (bool) $bowlingStats->is_bowling : false,
                 'out' => $battingStats ? (bool) $battingStats->out : false,
                 'matchBattingStat' => [
-                    'runs' => (int)$battingStats ? (int)$battingStats->runs_scored : 0,
-                    'balls' => (int)$battingStats ? (int)$battingStats->balls_faced : 0,
-                    'fours' => (int)$battingStats ? (int)$battingStats->fours : 0,
-                    'sixes' => (int)$battingStats ? (int)$battingStats->sixes : 0,
+                    'runs' => $battingStats ? (int) $battingStats->runs_scored : 0,
+                    'balls' => $battingStats ? (int) $battingStats->balls_faced : 0,
+                    'fours' => $battingStats ? (int) $battingStats->fours : 0,
+                    'sixes' => $battingStats ? (int) $battingStats->sixes : 0,
                 ],
                 'matchBowlingStat' => [
                     'runs' => $bowlingStats ? $bowlingStats->runs : 0,
