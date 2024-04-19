@@ -155,31 +155,30 @@ class MatchController extends Controller
 
     private function updateTeamStats($matchId, $teamData, $teamId, $isBattingTeam)
     {
-        // Get the innings number based on whether it's the first or second inning
         $inningsNumber = $isBattingTeam ? '1st innings' : '2nd innings';
 
-        // Retrieve the innings record for the specified match and innings number
         $innings = Innings::where('match_id', $matchId)
             ->where('innings_number', $inningsNumber)
             ->first();
 
-        // If innings record exists, use its ID; otherwise, default to 1
         $inningsId = $innings ? $innings->id : 1;
-
-        // Flag to keep track of striker status
-        $strikerSet = false;
 
         foreach ($teamData as $player) {
             $playerId = $player['id'];
 
-            // If player is already marked as a striker, unset striker status
-            if ($strikerSet && $player['striker']) {
+            // Check if any player in the team is currently marked as a striker
+            $isStriker = BattingStats::where('user_id', $playerId)
+                ->where('match_id', $matchId)
+                ->where('is_striker', true)
+                ->exists();
+
+            // If any player is already marked as a striker, unset striker status
+            if ($isStriker && $player['striker']) {
                 $player['striker'] = false;
             }
 
             // Check if player is a striker
             if ($player['striker']) {
-                $strikerSet = true; // Set the striker flag to true
                 $battingStats = [
                     'runs_scored' => $player['matchBattingStat']['runs'],
                     'fours' => $player['matchBattingStat']['fours'] ?? 0,
@@ -187,7 +186,7 @@ class MatchController extends Controller
                     'balls_faced' => $player['matchBattingStat']['balls'] ?? 0,
                     'is_striker' => true,
                     'out' => $player['out'],
-                    'innings_id' => $inningsId, // Use the actual innings ID
+                    'innings_id' => $inningsId,
                 ];
                 // Calculate strike rate if balls faced is not 0
                 $strikeRate = ($battingStats['balls_faced'] > 0) ?
@@ -200,7 +199,8 @@ class MatchController extends Controller
                     $battingStats
                 );
             } else {
-                $player['striker'] = false; // Mark other players as non-strikers
+                // Set the player's striker status to false
+                $player['striker'] = false;
             }
 
             if ($player['bowler'] && isset($player['matchBowlingStat']['runs'])) {
@@ -213,7 +213,7 @@ class MatchController extends Controller
                     'wickets_taken' => $player['matchBowlingStat']['wickets'] ?? 0,
                     'maidens' => $player['matchBowlingStat']['maidens'] ?? 0,
                     'is_bowling' => true,
-                    'innings_id' => $inningsId, // Use the actual innings ID
+                    'innings_id' => $inningsId,
                 ];
                 // Calculate economy rate if overs bowled is not 0
                 $economyRate = ($bowlingStats['overs_bowled'] > 0) ?
@@ -227,6 +227,7 @@ class MatchController extends Controller
             }
         }
     }
+
 
 
 
@@ -334,10 +335,10 @@ class MatchController extends Controller
                 'bowler' => $bowlingStats ? (bool) $bowlingStats->is_bowling : false,
                 'out' => $battingStats ? (bool) $battingStats->out : false,
                 'matchBattingStat' => [
-                    'runs' => $battingStats ? (int)$battingStats->runs_scored : 0,
-                    'balls' => $battingStats ? (int)$battingStats->balls_faced : 0,
-                    'fours' => $battingStats ? (int)$battingStats->fours : 0,
-                    'sixes' => $battingStats ? (int)$battingStats->sixes : 0,
+                    'runs' => (int)$battingStats ? (int)$battingStats->runs_scored : 0,
+                    'balls' => (int)$battingStats ? (int)$battingStats->balls_faced : 0,
+                    'fours' => (int)$battingStats ? (int)$battingStats->fours : 0,
+                    'sixes' => (int)$battingStats ? (int)$battingStats->sixes : 0,
                 ],
 
                 'matchBowlingStat' => [
