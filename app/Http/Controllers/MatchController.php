@@ -155,7 +155,19 @@ class MatchController extends Controller
 
     private function updateTeamStats($matchId, $teamData, $teamId, $isBattingTeam)
     {
-        $strikerSet = false; // Flag to keep track of striker status
+        // Get the innings number based on whether it's the first or second inning
+        $inningsNumber = $isBattingTeam ? '1st innings' : '2nd innings';
+
+        // Retrieve the innings record for the specified match and innings number
+        $innings = Innings::where('match_id', $matchId)
+            ->where('innings_number', $inningsNumber)
+            ->first();
+
+        // If innings record exists, use its ID; otherwise, default to 1
+        $inningsId = $innings ? $innings->id : 1;
+
+        // Flag to keep track of striker status
+        $strikerSet = false;
 
         foreach ($teamData as $player) {
             $playerId = $player['id'];
@@ -175,7 +187,7 @@ class MatchController extends Controller
                     'balls_faced' => $player['matchBattingStat']['balls'] ?? 0,
                     'is_striker' => true,
                     'out' => $player['out'],
-                    'innings_id' => 1,
+                    'innings_id' => $inningsId, // Use the actual innings ID
                 ];
                 // Calculate strike rate if balls faced is not 0
                 $strikeRate = ($battingStats['balls_faced'] > 0) ?
@@ -184,7 +196,7 @@ class MatchController extends Controller
 
                 // Update or create batting stats
                 BattingStats::updateOrCreate(
-                    ['user_id' => $playerId, 'match_id' => $matchId, 'innings_id' => 1],
+                    ['user_id' => $playerId, 'match_id' => $matchId, 'innings_id' => $inningsId],
                     $battingStats
                 );
             } else {
@@ -201,7 +213,7 @@ class MatchController extends Controller
                     'wickets_taken' => $player['matchBowlingStat']['wickets'] ?? 0,
                     'maidens' => $player['matchBowlingStat']['maidens'] ?? 0,
                     'is_bowling' => true,
-                    'innings_id' => 1,
+                    'innings_id' => $inningsId, // Use the actual innings ID
                 ];
                 // Calculate economy rate if overs bowled is not 0
                 $economyRate = ($bowlingStats['overs_bowled'] > 0) ?
@@ -209,7 +221,7 @@ class MatchController extends Controller
                 $bowlingStats['economy_rate'] = round($economyRate, 2);
 
                 BowlingStats::updateOrCreate(
-                    ['user_id' => $playerId, 'match_id' => $matchId, 'innings_id' => 1],
+                    ['user_id' => $playerId, 'match_id' => $matchId, 'innings_id' => $inningsId],
                     $bowlingStats
                 );
             }
