@@ -259,13 +259,14 @@ class MatchController extends Controller
         $firstInning = Innings::where('match_id', $matchId)->where('innings_number', 1)->first();
         $secondInning = Innings::where('match_id', $matchId)->where('innings_number', 2)->first();
         $inningsCount = Innings::where('match_id', $matchId)->count();
-        $firstInningTotalRuns = $match->first_inning_total_run ?? 0;
-        $firstInningTotalBalls = $match->first_inning_total_over ?? 0; // Assuming the column name is 'first_inning_total_over'
-        $firstInningTotalWickets = $match->first_inning_total_wicket ?? 0;
+        $firstInningTotalRuns = (int) ($match->first_inning_total_run ?? 0);
+        $firstInningTotalBalls = (int) ($match->first_inning_total_over ?? 0);
+        $firstInningTotalWickets = (int) ($match->first_inning_total_wicket ?? 0);
 
-        $secondInningTotalRuns = $match->second_inning_total_run ?? 0;
-        $secondInningTotalBalls = $match->second_inning_total_over ?? 0; // Assuming the column name is 'second_inning_total_over'
-        $secondInningTotalWickets = $match->second_inning_total_wicket ?? 0;
+        $secondInningTotalRuns = (int) ($match->second_inning_total_run ?? 0);
+        $secondInningTotalBalls = (int) ($match->second_inning_total_over ?? 0);
+        $secondInningTotalWickets = (int) ($match->second_inning_total_wicket ?? 0);
+
 
         $homeTeam = $match->team1->users->map(function ($teamPlayer) use ($matchId) {
             $battingStats = BattingStats::where('match_id', $matchId)
