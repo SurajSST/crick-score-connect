@@ -167,7 +167,8 @@ class MatchController extends Controller
             ->where('innings_number', $inningsNumber)
             ->first();
 
-        $inningsId = $innings ? $innings->id : 1;
+        // $inningsId = $innings ? $innings->id : 1;
+        $inningsId = 1;
 
         foreach ($teamData as $player) {
             $playerId = $player['id'];
