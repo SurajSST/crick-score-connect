@@ -140,9 +140,8 @@ class MatchController extends Controller
             'first_inning_total_wicket' => $data['firstInningTotalWicket'],
             'second_inning_total_run' => $data['secondInningTotalRun'],
             'second_inning_total_over' => $data['secondInningTotalOver'],
-            'second_inning_total_wicket' => $data['second_inning_total_wicket'],
+            'second_inning_total_wicket' => $data['secondInningTotalWicket'],
         ];
-
         $match->update($matchDetails);
         $jsonData = json_encode($data['extras'], JSON_UNESCAPED_SLASHES);
         $decodedData = json_decode($jsonData, true); // Decode to associative array
