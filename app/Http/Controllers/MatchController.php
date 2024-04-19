@@ -507,15 +507,15 @@ class MatchController extends Controller
                     'sixes' => $battingStats ? (int) $battingStats->sixes : 0,
                 ],
                 'matchBowlingStat' => [
-                    'runs' => $bowlingStats ? (int) $bowlingStats->runs : 0,
+                    'runs' => $bowlingStats ? (int) $bowlingStats->runs_conceded : 0,
                     'balls' => $bowlingStats ? (int) $bowlingStats->balls : 0,
                     'fours' => $bowlingStats ? (int) $bowlingStats->fours : 0,
                     'sixes' => $bowlingStats ? (int) $bowlingStats->sixes : 0,
                     'wides' => $bowlingStats ? (int) $bowlingStats->wides : 0,
                     'noBalls' => $bowlingStats ? (int) $bowlingStats->noBalls : 0,
                     'maidens' => $bowlingStats ? (int) $bowlingStats->maidens : 0,
-                    'wickets' => $bowlingStats ? (int) $bowlingStats->wickets : 0,
-                    'overs' => $bowlingStats ? (float) $bowlingStats->overs : 0,
+                    'wickets' => $bowlingStats ? (int) $bowlingStats->wickets_taken : 0,
+                    'overs' => $bowlingStats ? (float) $bowlingStats->overs_bowled : 0,
                 ],
             ];
         });
