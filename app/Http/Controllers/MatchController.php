@@ -177,7 +177,7 @@ class MatchController extends Controller
                 'out' => $player['out'],
                 'innings_id' => $inningsId,
             ];
-            // Calculate strike rate if balls faced is not 0
+
             $strikeRate = ($battingStats['balls_faced'] > 0) ?
                 ($battingStats['runs_scored'] / $battingStats['balls_faced']) * 100 : 0;
             $battingStats['strike_rate'] = round($strikeRate, 2);
@@ -188,28 +188,27 @@ class MatchController extends Controller
                 $battingStats
             );
 
-            if ($player['bowler'] && isset($player['matchBowlingStat']['runs'])) {
-                $bowlingStats = [
-                    'balls' => $player['matchBowlingStat']['balls'],
-                    'wides' => $player['matchBowlingStat']['wides'] ?? 0,
-                    'noBalls' => $player['matchBowlingStat']['noBalls'] ?? 0,
-                    'overs_bowled' => $player['matchBowlingStat']['overs'] ?? 0,
-                    'runs_conceded' => $player['matchBowlingStat']['runs'],
-                    'wickets_taken' => $player['matchBowlingStat']['wickets'] ?? 0,
-                    'maidens' => $player['matchBowlingStat']['maidens'] ?? 0,
-                    'is_bowling' => true,
-                    'innings_id' => $inningsId,
-                ];
-                // Calculate economy rate if overs bowled is not 0
-                $economyRate = ($bowlingStats['overs_bowled'] > 0) ?
-                    $bowlingStats['runs_conceded'] / $bowlingStats['overs_bowled'] : 0;
-                $bowlingStats['economy_rate'] = round($economyRate, 2);
+            $bowlingStats = [
+                'balls' => $player['matchBowlingStat']['balls'] ?? 0,
+                'wides' => $player['matchBowlingStat']['wides'] ?? 0,
+                'noBalls' => $player['matchBowlingStat']['noBalls'] ?? 0,
+                'overs_bowled' => $player['matchBowlingStat']['overs'] ?? 0,
+                'runs_conceded' => $player['matchBowlingStat']['runs'] ?? 0,
+                'wickets_taken' => $player['matchBowlingStat']['wickets'] ?? 0,
+                'maidens' => $player['matchBowlingStat']['maidens'] ?? 0,
+                'is_bowling' => $player['bowler'],
+                'innings_id' => $inningsId,
+            ];
 
-                BowlingStats::updateOrCreate(
-                    ['user_id' => $playerId, 'match_id' => $matchId, 'innings_id' => $inningsId],
-                    $bowlingStats
-                );
-            }
+            // Calculate economy rate if overs bowled is not 0
+            $economyRate = ($bowlingStats['overs_bowled'] > 0) ?
+                $bowlingStats['runs_conceded'] / $bowlingStats['overs_bowled'] : 0;
+            $bowlingStats['economy_rate'] = round($economyRate, 2);
+
+            BowlingStats::updateOrCreate(
+                ['user_id' => $playerId, 'match_id' => $matchId, 'innings_id' => $inningsId],
+                $bowlingStats
+            );
         }
     }
 
