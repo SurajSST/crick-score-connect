@@ -167,42 +167,27 @@ class MatchController extends Controller
         foreach ($teamData as $player) {
             $playerId = $player['id'];
 
-            // Check if any player in the team is currently marked as a striker
-            $isStriker = BattingStats::where('user_id', $playerId)
-                ->where('match_id', $matchId)
-                ->where('is_striker', true)
-                ->exists();
+            $battingStats = [
+                'runs_scored' => $player['matchBattingStat']['runs'],
+                'fours' => $player['matchBattingStat']['fours'] ?? 0,
+                'sixes' => $player['matchBattingStat']['sixes'] ?? 0,
+                'balls_faced' => $player['matchBattingStat']['balls'] ?? 0,
+                'is_striker' => $player['striker'],
+                'is_non_striker' => $player['nonStriker'],
+                'out' => $player['out'],
+                'innings_id' => $inningsId,
+            ];
+            dd($battingStats);
+            // Calculate strike rate if balls faced is not 0
+            $strikeRate = ($battingStats['balls_faced'] > 0) ?
+                ($battingStats['runs_scored'] / $battingStats['balls_faced']) * 100 : 0;
+            $battingStats['strike_rate'] = round($strikeRate, 2);
 
-            // If any player is already marked as a striker, unset striker status
-            if ($isStriker && $player['striker']) {
-                $player['striker'] = false;
-            }
-
-            // Check if player is a striker
-            if ($player['striker']) {
-                $battingStats = [
-                    'runs_scored' => $player['matchBattingStat']['runs'],
-                    'fours' => $player['matchBattingStat']['fours'] ?? 0,
-                    'sixes' => $player['matchBattingStat']['sixes'] ?? 0,
-                    'balls_faced' => $player['matchBattingStat']['balls'] ?? 0,
-                    'is_striker' => true,
-                    'out' => $player['out'],
-                    'innings_id' => $inningsId,
-                ];
-                // Calculate strike rate if balls faced is not 0
-                $strikeRate = ($battingStats['balls_faced'] > 0) ?
-                    ($battingStats['runs_scored'] / $battingStats['balls_faced']) * 100 : 0;
-                $battingStats['strike_rate'] = round($strikeRate, 2);
-
-                // Update or create batting stats
-                BattingStats::updateOrCreate(
-                    ['user_id' => $playerId, 'match_id' => $matchId, 'innings_id' => $inningsId],
-                    $battingStats
-                );
-            } else {
-                // Set the player's striker status to false
-                $player['striker'] = false;
-            }
+            // Update or create batting stats
+            BattingStats::updateOrCreate(
+                ['user_id' => $playerId, 'match_id' => $matchId, 'innings_id' => $inningsId],
+                $battingStats
+            );
 
             if ($player['bowler'] && isset($player['matchBowlingStat']['runs'])) {
                 $bowlingStats = [
