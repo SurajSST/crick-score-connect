@@ -135,11 +135,11 @@ class MatchController extends Controller
             'target' => $data['target'],
             'CRR' => $data['CRR'],
             'RRR' => Arr::get($data, 'RRR', 0),
-            'first_inning_total_run' => $data['first_inning_total_run'],
-            'first_inning_total_over' => $data['first_inning_total_over'],
-            'first_inning_total_wicket' => $data['first_inning_total_wicket'],
-            'second_inning_total_run' => $data['second_inning_total_run'],
-            'second_inning_total_over' => $data['second_inning_total_over'],
+            'first_inning_total_run' => $data['firstInningTotalRun'],
+            'first_inning_total_over' => $data['firstInningTotalOver'],
+            'first_inning_total_wicket' => $data['firstInningTotalWicket'],
+            'second_inning_total_run' => $data['secondInningTotalRun'],
+            'second_inning_total_over' => $data['secondInningTotalOver'],
             'second_inning_total_wicket' => $data['second_inning_total_wicket'],
         ];
 
