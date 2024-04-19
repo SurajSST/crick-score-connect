@@ -473,13 +473,14 @@ class MatchController extends Controller
         $firstInning = Innings::where('match_id', $matchId)->where('innings_number', 1)->first();
         $secondInning = Innings::where('match_id', $matchId)->where('innings_number', 2)->first();
         $inningsCount = Innings::where('match_id', $matchId)->count();
-        $firstInningTotalRuns = $firstInning ? $firstInning->battingStats->sum('runs_scored') : 0;
-        $firstInningTotalBalls = $firstInning ? $firstInning->bowlingStats->sum('balls') : 0;
-        $firstInningTotalWickets = $firstInning ? $firstInning->bowlingStats->sum('wickets') : 0;
+        $firstInningTotalRuns = (int) ($match->first_inning_total_run ?? 0);
+        $firstInningTotalOvers = (float) ($match->first_inning_total_over ?? 0);
+        $firstInningTotalWickets = (int) ($match->first_inning_total_wicket ?? 0);
 
-        $secondInningTotalRuns = $secondInning ? $secondInning->battingStats->sum('runs_scored') : 0;
-        $secondInningTotalBalls = $secondInning ? $secondInning->bowlingStats->sum('balls') : 0;
-        $secondInningTotalWickets = $secondInning ? $secondInning->bowlingStats->sum('wickets') : 0;
+        $secondInningTotalRuns = (int) ($match->second_inning_total_run ?? 0);
+        $secondInningTotalOvers = (float) ($match->second_inning_total_over ?? 0);
+        $secondInningTotalWickets = (int) ($match->second_inning_total_wicket ?? 0);
+
 
         $homeTeam = $match->team1->users->map(function ($teamPlayer) use ($matchId) {
             $battingStats = BattingStats::where('match_id', $matchId)
@@ -499,20 +500,20 @@ class MatchController extends Controller
                 'bowler' => $bowlingStats ? (bool) $bowlingStats->is_bowling : false,
                 'out' => $battingStats ? (bool) $battingStats->out : false,
                 'matchBattingStat' => [
-                    'runs' => $battingStats ? $battingStats->runs_scored : 0,
-                    'balls' => $battingStats ? $battingStats->balls_faced : 0,
-                    'fours' => $battingStats ? $battingStats->fours : 0,
-                    'sixes' => $battingStats ? $battingStats->sixes : 0,
+                    'runs' => $battingStats ? (int) $battingStats->runs_scored : 0,
+                    'balls' => $battingStats ? (int) $battingStats->balls_faced : 0,
+                    'fours' => $battingStats ? (int) $battingStats->fours : 0,
+                    'sixes' => $battingStats ? (int) $battingStats->sixes : 0,
                 ],
                 'matchBowlingStat' => [
-                    'runs' => $bowlingStats ? $bowlingStats->runs : 0,
-                    'balls' => $bowlingStats ? $bowlingStats->balls : 0,
-                    'fours' => $bowlingStats ? $bowlingStats->fours : 0,
-                    'sixes' => $bowlingStats ? $bowlingStats->sixes : 0,
-                    'wides' => $bowlingStats ? $bowlingStats->wides : 0,
-                    'noBalls' => $bowlingStats ? $bowlingStats->noBalls : 0,
-                    'maidens' => $bowlingStats ? $bowlingStats->maidens : 0,
-                    'wickets' => $bowlingStats ? $bowlingStats->wickets : 0,
+                    'runs' => $bowlingStats ? (int) $bowlingStats->runs : 0,
+                    'balls' => $bowlingStats ? (int) $bowlingStats->balls : 0,
+                    'fours' => $bowlingStats ? (int) $bowlingStats->fours : 0,
+                    'sixes' => $bowlingStats ? (int) $bowlingStats->sixes : 0,
+                    'wides' => $bowlingStats ? (int) $bowlingStats->wides : 0,
+                    'noBalls' => $bowlingStats ? (int) $bowlingStats->noBalls : 0,
+                    'maidens' => $bowlingStats ? (int) $bowlingStats->maidens : 0,
+                    'wickets' => $bowlingStats ? (int) $bowlingStats->wickets : 0,
                     'overs' => $bowlingStats ? (float) $bowlingStats->overs : 0,
                 ],
             ];
@@ -536,22 +537,24 @@ class MatchController extends Controller
                 'bowler' => $bowlingStats ? (bool) $bowlingStats->is_bowling : false,
                 'out' => $battingStats ? (bool) $battingStats->out : false,
                 'matchBattingStat' => [
-                    'runs' => $battingStats ? $battingStats->runs_scored : 0,
-                    'balls' => $battingStats ? $battingStats->balls_faced : 0,
-                    'fours' => $battingStats ? $battingStats->fours : 0,
-                    'sixes' => $battingStats ? $battingStats->sixes : 0,
+                    'runs' => $battingStats ? (int)$battingStats->runs_scored : 0,
+                    'balls' => $battingStats ? (int)$battingStats->balls_faced : 0,
+                    'fours' => $battingStats ? (int)$battingStats->fours : 0,
+                    'sixes' => $battingStats ? (int)$battingStats->sixes : 0,
                 ],
+
                 'matchBowlingStat' => [
-                    'runs' => $bowlingStats ? $bowlingStats->runs : 0,
-                    'balls' => $bowlingStats ? $bowlingStats->balls : 0,
-                    'fours' => $bowlingStats ? $bowlingStats->fours : 0,
-                    'sixes' => $bowlingStats ? $bowlingStats->sixes : 0,
-                    'wides' => $bowlingStats ? $bowlingStats->wides : 0,
-                    'noBalls' => $bowlingStats ? $bowlingStats->noBalls : 0,
-                    'maidens' => $bowlingStats ? $bowlingStats->maidens : 0,
-                    'wickets' => $bowlingStats ? $bowlingStats->wickets : 0,
-                    'overs' => $bowlingStats ? (float) $bowlingStats->overs : 0,
+                    'runs' => $bowlingStats ? (int)$bowlingStats->runs_conceded : 0,
+                    'balls' => $bowlingStats ? (int)$bowlingStats->balls : 0,
+                    'fours' => $bowlingStats ? (int)$bowlingStats->fours : 0,
+                    'sixes' => $bowlingStats ? (int)$bowlingStats->sixes : 0,
+                    'wides' => $bowlingStats ? (int)$bowlingStats->wides : 0,
+                    'noBalls' => $bowlingStats ? (int)$bowlingStats->noBalls : 0,
+                    'maidens' => $bowlingStats ? (int)$bowlingStats->maidens : 0,
+                    'wickets' => $bowlingStats ? (int)$bowlingStats->wickets_taken : 0,
+                    'overs' => $bowlingStats ? (float)$bowlingStats->overs_bowled : 0.0,
                 ],
+
             ];
         });
 
@@ -570,10 +573,10 @@ class MatchController extends Controller
             "awayTeamName" => $match->team2->name,
             "isFirstInning" => $inningsCount == 1 ? true : false,
             "firstInningTotalRun" => $firstInningTotalRuns,
-            "firstInningTotalOver" => (float) $firstInningTotalBalls / 6,
+            "firstInningTotalOver" => (float) $firstInningTotalOvers,
             "firstInningTotalWicket" => $firstInningTotalWickets,
             "secondInningTotalRun" => $secondInningTotalRuns,
-            "secondInningTotalOver" => (float) $secondInningTotalBalls / 6,
+            "secondInningTotalOver" => (float) $secondInningTotalOvers,
             "secondInningTotalWicket" => $secondInningTotalWickets,
 
             "homeTeam" => $homeTeam,

@@ -21,7 +21,6 @@ Route::get('/user/stats/{user_id}', [ApiController::class, 'getUserStatsApi'])->
 Route::post('/users/{id}/edit', [ApiController::class, 'userEdit'])->name('api.user.edit');
 
 Route::post('match/store', [MatchController::class, 'store'])->name('api.match.store');
-Route::post('/join-live-games', [MatchController::class, 'sendGameResponse']);
 Route::post('/payment-store', [MatchController::class, 'paymentStore']);
 Route::get('/user/{userId}/summary', [MatchController::class, 'getUserSummary']);
 
@@ -32,7 +31,7 @@ Route::post('friend-requests/{requestId}/reject', [ApiController::class, 'reject
 Route::get('users/{userId}/friend-requests', [ApiController::class, 'searchFriendRequests'])->name('api.friend-requests.search');
 Route::get('users/{userId}/friends', [ApiController::class, 'searchFriendList'])->name('api.friends.search');
 
-
+Route::post('/join-live-games', [MatchController::class, 'sendGameResponse']);
 Route::post('/games-data', [MatchController::class, 'sendResponse']);
 
 Route::post('/update-game-data', [MatchController::class, 'updateGameData']);
