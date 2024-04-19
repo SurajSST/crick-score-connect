@@ -177,7 +177,6 @@ class MatchController extends Controller
                 'out' => $player['out'],
                 'innings_id' => $inningsId,
             ];
-            dd($battingStats);
             // Calculate strike rate if balls faced is not 0
             $strikeRate = ($battingStats['balls_faced'] > 0) ?
                 ($battingStats['runs_scored'] / $battingStats['balls_faced']) * 100 : 0;
