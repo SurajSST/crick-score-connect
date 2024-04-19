@@ -13,6 +13,7 @@ use App\Models\TeamPlayer;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Validator;
@@ -133,7 +134,7 @@ class MatchController extends Controller
             'isGameCanceled' => $data['isGameCanceled'],
             'target' => $data['target'],
             'CRR' => $data['CRR'],
-            'RRR' => $data['RRR'],
+            'RRR' => Arr::get($data, 'RRR', 0)
         ];
 
         $match->update($matchDetails);
