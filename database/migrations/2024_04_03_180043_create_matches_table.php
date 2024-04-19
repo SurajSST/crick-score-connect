@@ -26,6 +26,12 @@ return new class extends Migration
             $table->boolean('isGameFinished')->default(false);
             $table->string('finishedMessage')->nullable()->default('Message');
             $table->boolean('isGameCanceled')->default(false);
+            $table->integer('first_inning_total_run')->nullable()->default(0);
+            $table->decimal('first_inning_total_over', 8, 2)->nullable()->default(0);
+            $table->integer('first_inning_total_wicket')->nullable()->default(0);
+            $table->integer('second_inning_total_run')->nullable()->default(0);
+            $table->decimal('second_inning_total_over', 8, 2)->nullable()->default(0);
+            $table->integer('second_inning_total_wicket')->nullable()->default(0);
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->integer('target')->default(0);
             $table->decimal('CRR', 8, 2)->default(0);

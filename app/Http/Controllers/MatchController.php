@@ -134,7 +134,13 @@ class MatchController extends Controller
             'isGameCanceled' => $data['isGameCanceled'],
             'target' => $data['target'],
             'CRR' => $data['CRR'],
-            'RRR' => Arr::get($data, 'RRR', 0)
+            'RRR' => Arr::get($data, 'RRR', 0),
+            'first_inning_total_run' => $data['first_inning_total_run'],
+            'first_inning_total_over' => $data['first_inning_total_over'],
+            'first_inning_total_wicket' => $data['first_inning_total_wicket'],
+            'second_inning_total_run' => $data['second_inning_total_run'],
+            'second_inning_total_over' => $data['second_inning_total_over'],
+            'second_inning_total_wicket' => $data['second_inning_total_wicket'],
         ];
 
         $match->update($matchDetails);
@@ -213,8 +219,6 @@ class MatchController extends Controller
     }
 
 
-
-
     private function createInningsRecord($matchId, $battingTeamId, $bowlingTeamId, $inningsNumber)
     {
         // Check if the innings record already exists for the specified match and innings number
@@ -256,13 +260,13 @@ class MatchController extends Controller
         $firstInning = Innings::where('match_id', $matchId)->where('innings_number', 1)->first();
         $secondInning = Innings::where('match_id', $matchId)->where('innings_number', 2)->first();
         $inningsCount = Innings::where('match_id', $matchId)->count();
-        $firstInningTotalRuns = $firstInning ? $firstInning->battingStats->sum('runs_scored') : 0;
-        $firstInningTotalBalls = $firstInning ? $firstInning->bowlingStats->sum('balls') : 0;
-        $firstInningTotalWickets = $firstInning ? $firstInning->bowlingStats->sum('wickets') : 0;
+        $firstInningTotalRuns = $match->first_inning_total_run ?? 0;
+        $firstInningTotalBalls = $match->first_inning_total_over ?? 0; // Assuming the column name is 'first_inning_total_over'
+        $firstInningTotalWickets = $match->first_inning_total_wicket ?? 0;
 
-        $secondInningTotalRuns = $secondInning ? $secondInning->battingStats->sum('runs_scored') : 0;
-        $secondInningTotalBalls = $secondInning ? $secondInning->bowlingStats->sum('balls') : 0;
-        $secondInningTotalWickets = $secondInning ? $secondInning->bowlingStats->sum('wickets') : 0;
+        $secondInningTotalRuns = $match->second_inning_total_run ?? 0;
+        $secondInningTotalBalls = $match->second_inning_total_over ?? 0; // Assuming the column name is 'second_inning_total_over'
+        $secondInningTotalWickets = $match->second_inning_total_wicket ?? 0;
 
         $homeTeam = $match->team1->users->map(function ($teamPlayer) use ($matchId) {
             $battingStats = BattingStats::where('match_id', $matchId)

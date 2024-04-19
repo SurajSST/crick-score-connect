@@ -28,7 +28,14 @@ class Matches extends Model
         'CRR',
         'RRR',
         'extras',
+        'first_inning_total_run',
+        'first_inning_total_over',
+        'first_inning_total_wicket',
+        'second_inning_total_run',
+        'second_inning_total_over',
+        'second_inning_total_wicket',
     ];
+
     protected $casts = [
         'extras' => 'array',
     ];
