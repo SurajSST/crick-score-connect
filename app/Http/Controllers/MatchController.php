@@ -141,24 +141,33 @@ class MatchController extends Controller
         $decodedData = json_decode($jsonData, true); // Decode to associative array
         $match->update(['extras' => $decodedData]);  // Update with decoded data
 
-        //$this->updateTeamStats($matchId, $data['homeTeam'], $data['team1_id'], true);
-        $this->updateTeamStats($matchId, $data['awayTeam'], $data['team2_id'], false);
-
         if ($data['isFirstInning']) {
             $this->createInningsRecord($matchId, $data['team1_id'], $data['team2_id'], '1st innings');
         } else {
             $this->createInningsRecord($matchId, $data['team2_id'], $data['team1_id'], '2nd innings');
         }
 
+        $this->updateTeamStats($matchId, $data['homeTeam'], $data['team1_id'], true);
+        $this->updateTeamStats($matchId, $data['awayTeam'], $data['team2_id'], false);
+
         return response()->json(['message' => 'Game data updated successfully'], 200);
     }
 
     private function updateTeamStats($matchId, $teamData, $teamId, $isBattingTeam)
     {
+        $strikerSet = false; // Flag to keep track of striker status
+
         foreach ($teamData as $player) {
             $playerId = $player['id'];
 
+            // If player is already marked as a striker, unset striker status
+            if ($strikerSet && $player['striker']) {
+                $player['striker'] = false;
+            }
+
+            // Check if player is a striker
             if ($player['striker']) {
+                $strikerSet = true; // Set the striker flag to true
                 $battingStats = [
                     'runs_scored' => $player['matchBattingStat']['runs'],
                     'fours' => $player['matchBattingStat']['fours'] ?? 0,
@@ -178,7 +187,10 @@ class MatchController extends Controller
                     ['user_id' => $playerId, 'match_id' => $matchId, 'innings_id' => 1],
                     $battingStats
                 );
+            } else {
+                $player['striker'] = false; // Mark other players as non-strikers
             }
+
             if ($player['bowler'] && isset($player['matchBowlingStat']['runs'])) {
                 $bowlingStats = [
                     'balls' => $player['matchBowlingStat']['balls'],
@@ -196,7 +208,6 @@ class MatchController extends Controller
                     $bowlingStats['runs_conceded'] / $bowlingStats['overs_bowled'] : 0;
                 $bowlingStats['economy_rate'] = round($economyRate, 2);
 
-                // Update or create bowling stats
                 BowlingStats::updateOrCreate(
                     ['user_id' => $playerId, 'match_id' => $matchId, 'innings_id' => 1],
                     $bowlingStats
@@ -204,6 +215,7 @@ class MatchController extends Controller
             }
         }
     }
+
 
 
     private function createInningsRecord($matchId, $battingTeamId, $bowlingTeamId, $inningsNumber)
