@@ -18,7 +18,13 @@ class BattingStats extends Model
         'sixes',
         'strike_rate',
         'balls_faced',
+        'is_striker',
+        'out', // Added missing field
+        'is_non_striker', // Added missing field
+        'is_bencher', // Added missing field
     ];
+
+
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');

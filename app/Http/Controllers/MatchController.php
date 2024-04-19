@@ -141,7 +141,7 @@ class MatchController extends Controller
         $decodedData = json_decode($jsonData, true); // Decode to associative array
         $match->update(['extras' => $decodedData]);  // Update with decoded data
 
-        $this->updateTeamStats($matchId, $data['homeTeam'], $data['team1_id'], true);
+        //$this->updateTeamStats($matchId, $data['homeTeam'], $data['team1_id'], true);
         $this->updateTeamStats($matchId, $data['awayTeam'], $data['team2_id'], false);
 
         if ($data['isFirstInning']) {
@@ -158,19 +158,53 @@ class MatchController extends Controller
         foreach ($teamData as $player) {
             $playerId = $player['id'];
 
-            if ($isBattingTeam && $player['striker']) {
-                $battingStats = $player['matchBattingStat'];
-                $battingStats['innings_id'] = 1;
-                BattingStats::updateOrCreate(['user_id' => $playerId, 'match_id' => $matchId], $battingStats);
-            }
+            if ($player['striker']) {
+                $battingStats = [
+                    'runs_scored' => $player['matchBattingStat']['runs'],
+                    'fours' => $player['matchBattingStat']['fours'] ?? 0,
+                    'sixes' => $player['matchBattingStat']['sixes'] ?? 0,
+                    'balls_faced' => $player['matchBattingStat']['balls'] ?? 0,
+                    'is_striker' => true,
+                    'out' => $player['out'],
+                    'innings_id' => 1,
+                ];
+                // Calculate strike rate if balls faced is not 0
+                $strikeRate = ($battingStats['balls_faced'] > 0) ?
+                    ($battingStats['runs_scored'] / $battingStats['balls_faced']) * 100 : 0;
+                $battingStats['strike_rate'] = round($strikeRate, 2);
 
-            if (!$isBattingTeam && $player['bowler']) {
-                $bowlingStats = $player['matchBowlingStat'];
-                $bowlingStats['innings_id'] = 1;
-                BowlingStats::updateOrCreate(['user_id' => $playerId, 'match_id' => $matchId], $bowlingStats);
+                // Update or create batting stats
+                BattingStats::updateOrCreate(
+                    ['user_id' => $playerId, 'match_id' => $matchId, 'innings_id' => 1],
+                    $battingStats
+                );
+            }
+            if ($player['bowler'] && isset($player['matchBowlingStat']['runs'])) {
+                $bowlingStats = [
+                    'balls' => $player['matchBowlingStat']['balls'],
+                    'wides' => $player['matchBowlingStat']['wides'] ?? 0,
+                    'noBalls' => $player['matchBowlingStat']['noBalls'] ?? 0,
+                    'overs_bowled' => $player['matchBowlingStat']['overs'] ?? 0,
+                    'runs_conceded' => $player['matchBowlingStat']['runs'],
+                    'wickets_taken' => $player['matchBowlingStat']['wickets'] ?? 0,
+                    'maidens' => $player['matchBowlingStat']['maidens'] ?? 0,
+                    'is_bowling' => true,
+                    'innings_id' => 1,
+                ];
+                // Calculate economy rate if overs bowled is not 0
+                $economyRate = ($bowlingStats['overs_bowled'] > 0) ?
+                    $bowlingStats['runs_conceded'] / $bowlingStats['overs_bowled'] : 0;
+                $bowlingStats['economy_rate'] = round($economyRate, 2);
+
+                // Update or create bowling stats
+                BowlingStats::updateOrCreate(
+                    ['user_id' => $playerId, 'match_id' => $matchId, 'innings_id' => 1],
+                    $bowlingStats
+                );
             }
         }
     }
+
 
     private function createInningsRecord($matchId, $battingTeamId, $bowlingTeamId, $inningsNumber)
     {

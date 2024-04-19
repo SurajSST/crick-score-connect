@@ -13,12 +13,17 @@ class BowlingStats extends Model
         'user_id',
         'match_id',
         'innings_id',
+        'balls',
+        'wides',
+        'noBalls',
         'overs_bowled',
         'runs_conceded',
         'wickets_taken',
         'maidens',
         'economy_rate',
+        'is_bowling',
     ];
+
 
     public function user()
     {
