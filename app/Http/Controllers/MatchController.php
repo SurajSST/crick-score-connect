@@ -260,11 +260,11 @@ class MatchController extends Controller
         $secondInning = Innings::where('match_id', $matchId)->where('innings_number', 2)->first();
         $inningsCount = Innings::where('match_id', $matchId)->count();
         $firstInningTotalRuns = (int) ($match->first_inning_total_run ?? 0);
-        $firstInningTotalBalls = (int) ($match->first_inning_total_over ?? 0);
+        $firstInningTotalOvers = (float) ($match->first_inning_total_over ?? 0);
         $firstInningTotalWickets = (int) ($match->first_inning_total_wicket ?? 0);
 
         $secondInningTotalRuns = (int) ($match->second_inning_total_run ?? 0);
-        $secondInningTotalBalls = (int) ($match->second_inning_total_over ?? 0);
+        $secondInningTotalOvers = (float) ($match->second_inning_total_over ?? 0);
         $secondInningTotalWickets = (int) ($match->second_inning_total_wicket ?? 0);
 
 
@@ -359,10 +359,10 @@ class MatchController extends Controller
             "awayTeamName" => $match->team2->name,
             "isFirstInning" => $inningsCount == 1 ? true : false,
             "firstInningTotalRun" => $firstInningTotalRuns,
-            "firstInningTotalOver" => (float) $firstInningTotalBalls / 6,
+            "firstInningTotalOver" => (float) $firstInningTotalOvers,
             "firstInningTotalWicket" => $firstInningTotalWickets,
             "secondInningTotalRun" => $secondInningTotalRuns,
-            "secondInningTotalOver" => (float) $secondInningTotalBalls / 6,
+            "secondInningTotalOver" => (float) $secondInningTotalOvers,
             "secondInningTotalWicket" => $secondInningTotalWickets,
 
             "homeTeam" => $homeTeam,
