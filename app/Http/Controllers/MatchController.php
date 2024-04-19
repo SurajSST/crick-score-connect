@@ -247,81 +247,88 @@ class MatchController extends Controller
         $firstInning = Innings::where('match_id', $matchId)->where('innings_number', 1)->first();
         $secondInning = Innings::where('match_id', $matchId)->where('innings_number', 2)->first();
         $inningsCount = Innings::where('match_id', $matchId)->count();
-        // Calculate total runs, overs, and wickets for the first inning
         $firstInningTotalRuns = $firstInning ? $firstInning->battingStats->sum('runs_scored') : 0;
         $firstInningTotalBalls = $firstInning ? $firstInning->bowlingStats->sum('balls') : 0;
         $firstInningTotalWickets = $firstInning ? $firstInning->bowlingStats->sum('wickets') : 0;
 
-        // Calculate total runs, overs, and wickets for the second inning
         $secondInningTotalRuns = $secondInning ? $secondInning->battingStats->sum('runs_scored') : 0;
         $secondInningTotalBalls = $secondInning ? $secondInning->bowlingStats->sum('balls') : 0;
         $secondInningTotalWickets = $secondInning ? $secondInning->bowlingStats->sum('wickets') : 0;
 
-        $homeTeam = $match->team1->users->map(function ($teamPlayer) {
-            $battingStats = $teamPlayer->battingStats->isEmpty() ? null : [
-                'runs' => $teamPlayer->battingStats->sum('runs_scored'),
-                'balls' => $teamPlayer->battingStats->sum('balls_faced'),
-                'fours' => $teamPlayer->battingStats->sum('fours'),
-                'sixes' => $teamPlayer->battingStats->sum('sixes'),
-            ];
+        $homeTeam = $match->team1->users->map(function ($teamPlayer) use ($matchId) {
+            $battingStats = BattingStats::where('match_id', $matchId)
+                ->where('user_id', $teamPlayer->id)
+                ->first();
 
-            $bowlingStats = $teamPlayer->bowlingStats->isEmpty() ? null : [
-                'runs' => $teamPlayer->bowlingStats->sum('runs'),
-                'balls' => $teamPlayer->bowlingStats->sum('balls'),
-                'fours' => $teamPlayer->bowlingStats->sum('fours'),
-                'sixes' => $teamPlayer->bowlingStats->sum('sixes'),
-                'wides' => $teamPlayer->bowlingStats->sum('wides'),
-                'noBalls' => $teamPlayer->bowlingStats->sum('noBalls'),
-                'maidens' => $teamPlayer->bowlingStats->sum('maidens'),
-                'wickets' => $teamPlayer->bowlingStats->sum('wickets'),
-                'overs' => (float) $teamPlayer->bowlingStats->sum('overs'),
-            ];
+            $bowlingStats = BowlingStats::where('match_id', $matchId)
+                ->where('user_id', $teamPlayer->id)
+                ->first();
 
             return [
                 'id' => $teamPlayer->id,
                 'name' => $teamPlayer->name,
                 'username' => $teamPlayer->username,
-                'striker' => (bool) $teamPlayer->battingStats->first()->is_striker,
-                'nonStriker' => (bool) $teamPlayer->battingStats->first()->is_non_striker,
-                'bowler' => (bool) $teamPlayer->bowlingStats->first()->is_bowling,
-                'out' => (bool) $teamPlayer->battingStats->first()->out,
-                'matchBattingStat' => $battingStats,
-                'matchBowlingStat' => $bowlingStats,
+                'striker' => $battingStats ? (bool) $battingStats->is_striker : false,
+                'nonStriker' => $battingStats ? (bool) $battingStats->is_non_striker : false,
+                'bowler' => $bowlingStats ? (bool) $bowlingStats->is_bowling : false,
+                'out' => $battingStats ? (bool) $battingStats->out : false,
+                'matchBattingStat' => [
+                    'runs' => $battingStats ? $battingStats->runs_scored : 0,
+                    'balls' => $battingStats ? $battingStats->balls_faced : 0,
+                    'fours' => $battingStats ? $battingStats->fours : 0,
+                    'sixes' => $battingStats ? $battingStats->sixes : 0,
+                ],
+                'matchBowlingStat' => [
+                    'runs' => $bowlingStats ? $bowlingStats->runs : 0,
+                    'balls' => $bowlingStats ? $bowlingStats->balls : 0,
+                    'fours' => $bowlingStats ? $bowlingStats->fours : 0,
+                    'sixes' => $bowlingStats ? $bowlingStats->sixes : 0,
+                    'wides' => $bowlingStats ? $bowlingStats->wides : 0,
+                    'noBalls' => $bowlingStats ? $bowlingStats->noBalls : 0,
+                    'maidens' => $bowlingStats ? $bowlingStats->maidens : 0,
+                    'wickets' => $bowlingStats ? $bowlingStats->wickets : 0,
+                    'overs' => $bowlingStats ? (float) $bowlingStats->overs : 0,
+                ],
             ];
         });
 
-        $awayTeam = $match->team2->users->map(function ($teamPlayer) {
-            $battingStats = $teamPlayer->battingStats->isEmpty() ? null : [
-                'runs' => $teamPlayer->battingStats->sum('runs_scored'),
-                'balls' => $teamPlayer->battingStats->sum('balls_faced'),
-                'fours' => $teamPlayer->battingStats->sum('fours'),
-                'sixes' => $teamPlayer->battingStats->sum('sixes'),
-            ];
+        $awayTeam = $match->team2->users->map(function ($teamPlayer) use ($matchId) {
+            $battingStats = BattingStats::where('match_id', $matchId)
+                ->where('user_id', $teamPlayer->id)
+                ->first();
 
-            $bowlingStats = $teamPlayer->bowlingStats->isEmpty() ? null : [
-                'runs' => $teamPlayer->bowlingStats->sum('runs'),
-                'balls' => $teamPlayer->bowlingStats->sum('balls'),
-                'fours' => $teamPlayer->bowlingStats->sum('fours'),
-                'sixes' => $teamPlayer->bowlingStats->sum('sixes'),
-                'wides' => $teamPlayer->bowlingStats->sum('wides'),
-                'noBalls' => $teamPlayer->bowlingStats->sum('noBalls'),
-                'maidens' => $teamPlayer->bowlingStats->sum('maidens'),
-                'wickets' => $teamPlayer->bowlingStats->sum('wickets'),
-                'overs' => (float) $teamPlayer->bowlingStats->sum('overs'),
-            ];
+            $bowlingStats = BowlingStats::where('match_id', $matchId)
+                ->where('user_id', $teamPlayer->id)
+                ->first();
 
             return [
                 'id' => $teamPlayer->id,
                 'name' => $teamPlayer->name,
                 'username' => $teamPlayer->username,
-                'striker' => (bool) $teamPlayer->battingStats->first()->is_striker,
-                'nonStriker' => (bool) $teamPlayer->battingStats->first()->is_non_striker,
-                'bowler' => (bool) $teamPlayer->bowlingStats->first()->is_bowling,
-                'out' => (bool) $teamPlayer->battingStats->first()->out,
-                'matchBattingStat' => $battingStats,
-                'matchBowlingStat' => $bowlingStats,
+                'striker' => $battingStats ? (bool) $battingStats->is_striker : false,
+                'nonStriker' => $battingStats ? (bool) $battingStats->is_non_striker : false,
+                'bowler' => $bowlingStats ? (bool) $bowlingStats->is_bowling : false,
+                'out' => $battingStats ? (bool) $battingStats->out : false,
+                'matchBattingStat' => [
+                    'runs' => $battingStats ? $battingStats->runs_scored : 0,
+                    'balls' => $battingStats ? $battingStats->balls_faced : 0,
+                    'fours' => $battingStats ? $battingStats->fours : 0,
+                    'sixes' => $battingStats ? $battingStats->sixes : 0,
+                ],
+                'matchBowlingStat' => [
+                    'runs' => $bowlingStats ? $bowlingStats->runs : 0,
+                    'balls' => $bowlingStats ? $bowlingStats->balls : 0,
+                    'fours' => $bowlingStats ? $bowlingStats->fours : 0,
+                    'sixes' => $bowlingStats ? $bowlingStats->sixes : 0,
+                    'wides' => $bowlingStats ? $bowlingStats->wides : 0,
+                    'noBalls' => $bowlingStats ? $bowlingStats->noBalls : 0,
+                    'maidens' => $bowlingStats ? $bowlingStats->maidens : 0,
+                    'wickets' => $bowlingStats ? $bowlingStats->wickets : 0,
+                    'overs' => $bowlingStats ? (float) $bowlingStats->overs : 0,
+                ],
             ];
         });
+
 
         $response = [
             "isGameFinished" => (bool) $match->isGameFinished,
@@ -451,81 +458,88 @@ class MatchController extends Controller
         $firstInning = Innings::where('match_id', $matchId)->where('innings_number', 1)->first();
         $secondInning = Innings::where('match_id', $matchId)->where('innings_number', 2)->first();
         $inningsCount = Innings::where('match_id', $matchId)->count();
-        // Calculate total runs, overs, and wickets for the first inning
         $firstInningTotalRuns = $firstInning ? $firstInning->battingStats->sum('runs_scored') : 0;
         $firstInningTotalBalls = $firstInning ? $firstInning->bowlingStats->sum('balls') : 0;
         $firstInningTotalWickets = $firstInning ? $firstInning->bowlingStats->sum('wickets') : 0;
 
-        // Calculate total runs, overs, and wickets for the second inning
         $secondInningTotalRuns = $secondInning ? $secondInning->battingStats->sum('runs_scored') : 0;
         $secondInningTotalBalls = $secondInning ? $secondInning->bowlingStats->sum('balls') : 0;
         $secondInningTotalWickets = $secondInning ? $secondInning->bowlingStats->sum('wickets') : 0;
 
-        $homeTeam = $match->team1->users->map(function ($teamPlayer) {
-            $battingStats = $teamPlayer->battingStats->isEmpty() ? null : [
-                'runs' => $teamPlayer->battingStats->sum('runs_scored'),
-                'balls' => $teamPlayer->battingStats->sum('balls_faced'),
-                'fours' => $teamPlayer->battingStats->sum('fours'),
-                'sixes' => $teamPlayer->battingStats->sum('sixes'),
-            ];
+        $homeTeam = $match->team1->users->map(function ($teamPlayer) use ($matchId) {
+            $battingStats = BattingStats::where('match_id', $matchId)
+                ->where('user_id', $teamPlayer->id)
+                ->first();
 
-            $bowlingStats = $teamPlayer->bowlingStats->isEmpty() ? null : [
-                'runs' => $teamPlayer->bowlingStats->sum('runs'),
-                'balls' => $teamPlayer->bowlingStats->sum('balls'),
-                'fours' => $teamPlayer->bowlingStats->sum('fours'),
-                'sixes' => $teamPlayer->bowlingStats->sum('sixes'),
-                'wides' => $teamPlayer->bowlingStats->sum('wides'),
-                'noBalls' => $teamPlayer->bowlingStats->sum('noBalls'),
-                'maidens' => $teamPlayer->bowlingStats->sum('maidens'),
-                'wickets' => $teamPlayer->bowlingStats->sum('wickets'),
-                'overs' => (float) $teamPlayer->bowlingStats->sum('overs'),
-            ];
+            $bowlingStats = BowlingStats::where('match_id', $matchId)
+                ->where('user_id', $teamPlayer->id)
+                ->first();
 
             return [
                 'id' => $teamPlayer->id,
                 'name' => $teamPlayer->name,
                 'username' => $teamPlayer->username,
-                'striker' => (bool) $teamPlayer->battingStats->first()->is_striker,
-                'nonStriker' => (bool) $teamPlayer->battingStats->first()->is_non_striker,
-                'bowler' => (bool) $teamPlayer->bowlingStats->first()->is_bowling,
-                'out' => (bool) $teamPlayer->battingStats->first()->out,
-                'matchBattingStat' => $battingStats,
-                'matchBowlingStat' => $bowlingStats,
+                'striker' => $battingStats ? (bool) $battingStats->is_striker : false,
+                'nonStriker' => $battingStats ? (bool) $battingStats->is_non_striker : false,
+                'bowler' => $bowlingStats ? (bool) $bowlingStats->is_bowling : false,
+                'out' => $battingStats ? (bool) $battingStats->out : false,
+                'matchBattingStat' => [
+                    'runs' => $battingStats ? $battingStats->runs_scored : 0,
+                    'balls' => $battingStats ? $battingStats->balls_faced : 0,
+                    'fours' => $battingStats ? $battingStats->fours : 0,
+                    'sixes' => $battingStats ? $battingStats->sixes : 0,
+                ],
+                'matchBowlingStat' => [
+                    'runs' => $bowlingStats ? $bowlingStats->runs : 0,
+                    'balls' => $bowlingStats ? $bowlingStats->balls : 0,
+                    'fours' => $bowlingStats ? $bowlingStats->fours : 0,
+                    'sixes' => $bowlingStats ? $bowlingStats->sixes : 0,
+                    'wides' => $bowlingStats ? $bowlingStats->wides : 0,
+                    'noBalls' => $bowlingStats ? $bowlingStats->noBalls : 0,
+                    'maidens' => $bowlingStats ? $bowlingStats->maidens : 0,
+                    'wickets' => $bowlingStats ? $bowlingStats->wickets : 0,
+                    'overs' => $bowlingStats ? (float) $bowlingStats->overs : 0,
+                ],
             ];
         });
 
-        $awayTeam = $match->team2->users->map(function ($teamPlayer) {
-            $battingStats = $teamPlayer->battingStats->isEmpty() ? null : [
-                'runs' => $teamPlayer->battingStats->sum('runs_scored'),
-                'balls' => $teamPlayer->battingStats->sum('balls_faced'),
-                'fours' => $teamPlayer->battingStats->sum('fours'),
-                'sixes' => $teamPlayer->battingStats->sum('sixes'),
-            ];
+        $awayTeam = $match->team2->users->map(function ($teamPlayer) use ($matchId) {
+            $battingStats = BattingStats::where('match_id', $matchId)
+                ->where('user_id', $teamPlayer->id)
+                ->first();
 
-            $bowlingStats = $teamPlayer->bowlingStats->isEmpty() ? null : [
-                'runs' => $teamPlayer->bowlingStats->sum('runs'),
-                'balls' => $teamPlayer->bowlingStats->sum('balls'),
-                'fours' => $teamPlayer->bowlingStats->sum('fours'),
-                'sixes' => $teamPlayer->bowlingStats->sum('sixes'),
-                'wides' => $teamPlayer->bowlingStats->sum('wides'),
-                'noBalls' => $teamPlayer->bowlingStats->sum('noBalls'),
-                'maidens' => $teamPlayer->bowlingStats->sum('maidens'),
-                'wickets' => $teamPlayer->bowlingStats->sum('wickets'),
-                'overs' => (float) $teamPlayer->bowlingStats->sum('overs'),
-            ];
+            $bowlingStats = BowlingStats::where('match_id', $matchId)
+                ->where('user_id', $teamPlayer->id)
+                ->first();
 
             return [
                 'id' => $teamPlayer->id,
                 'name' => $teamPlayer->name,
                 'username' => $teamPlayer->username,
-                'striker' => (bool) $teamPlayer->battingStats->first()->is_striker,
-                'nonStriker' => (bool) $teamPlayer->battingStats->first()->is_non_striker,
-                'bowler' => (bool) $teamPlayer->bowlingStats->first()->is_bowling,
-                'out' => (bool) $teamPlayer->battingStats->first()->out,
-                'matchBattingStat' => $battingStats,
-                'matchBowlingStat' => $bowlingStats,
+                'striker' => $battingStats ? (bool) $battingStats->is_striker : false,
+                'nonStriker' => $battingStats ? (bool) $battingStats->is_non_striker : false,
+                'bowler' => $bowlingStats ? (bool) $bowlingStats->is_bowling : false,
+                'out' => $battingStats ? (bool) $battingStats->out : false,
+                'matchBattingStat' => [
+                    'runs' => $battingStats ? $battingStats->runs_scored : 0,
+                    'balls' => $battingStats ? $battingStats->balls_faced : 0,
+                    'fours' => $battingStats ? $battingStats->fours : 0,
+                    'sixes' => $battingStats ? $battingStats->sixes : 0,
+                ],
+                'matchBowlingStat' => [
+                    'runs' => $bowlingStats ? $bowlingStats->runs : 0,
+                    'balls' => $bowlingStats ? $bowlingStats->balls : 0,
+                    'fours' => $bowlingStats ? $bowlingStats->fours : 0,
+                    'sixes' => $bowlingStats ? $bowlingStats->sixes : 0,
+                    'wides' => $bowlingStats ? $bowlingStats->wides : 0,
+                    'noBalls' => $bowlingStats ? $bowlingStats->noBalls : 0,
+                    'maidens' => $bowlingStats ? $bowlingStats->maidens : 0,
+                    'wickets' => $bowlingStats ? $bowlingStats->wickets : 0,
+                    'overs' => $bowlingStats ? (float) $bowlingStats->overs : 0,
+                ],
             ];
         });
+
 
         $response = [
             "isGameFinished" => (bool) $match->isGameFinished,
