@@ -14,4 +14,9 @@ class MatchPayment extends Model
         'user_id',
         'match_id'
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

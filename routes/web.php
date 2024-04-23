@@ -29,6 +29,7 @@ Route::middleware([
 
     Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [AdminController::class, 'index'])->name('index');
+        Route::get('/payments', [AdminController::class, 'payments'])->name('payments');
         Route::get('/users', [AdminController::class, 'allUsers'])->name('users');
         Route::get('/user/show', [AdminController::class, 'allUsers'])->name('user.show');
         Route::get('/users/{id}/edit', [AdminController::class, 'editUser'])->name('user.edit');

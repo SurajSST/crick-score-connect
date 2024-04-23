@@ -46,13 +46,13 @@
                                 <td>
                                     <div class="d-flex">
                                         <button class="btn btn-info shadow btn-xs sharp btn-view-stats" data-user-id="{{ $user->id }}"><i class="fa fa-eye"></i></button> <a href="{{ route('admin.user.edit', $user->id) }}" class="btn btn-primary shadow btn-xs sharp mr-1"><i class="fa fa-pencil"></i></a>
-                                        <form action="{{ route('admin.user.delete', $user->id) }}" method="POST" style="display: inline;">
+                                        <!-- <form action="{{ route('admin.user.delete', $user->id) }}" method="POST" style="display: inline;">
                                             @csrf
                                             @method('DELETE')
                                             <button type="button" class="btn btn-danger shadow btn-xs sharp" onclick="displayConfirmationDialog('Are you sure you want to delete?', this.form)">
                                                 <i class="fa fa-trash"></i>
                                             </button>
-                                        </form>
+                                        </form> -->
                                     </div>
                                 </td>
                             </tr>

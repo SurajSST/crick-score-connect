@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Matches;
+use App\Models\MatchPayment;
 use App\Models\Team;
 use App\Models\User;
 use Illuminate\Database\QueryException;
@@ -18,6 +19,11 @@ class AdminController extends Controller
         $totalMatches = Matches::count();
 
         return view('admin.frontend.home', compact('totalUsers', 'totalTeams', 'totalMatches'));
+    }
+    public function payments()
+    {
+        $payments = MatchPayment::all();
+        return view('admin.frontend.payments', compact('payments'));
     }
 
     public function allUsers()

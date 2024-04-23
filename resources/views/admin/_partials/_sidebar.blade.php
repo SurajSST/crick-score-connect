@@ -14,6 +14,13 @@
                     <span class="nav-text">Users</span>
                 </a>
             </li>
+            <li>
+                <a href="{{ route('admin.payments') }}" class="ai-icon" href="javascript:void()" aria-expanded="false">
+                    <i class="fa fa-money"></i>
+                    <span class="nav-text">Payments</span>
+                </a>
+            </li>
+
         </ul>
 
         <div class="copyright">
