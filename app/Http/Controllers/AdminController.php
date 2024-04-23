@@ -17,8 +17,9 @@ class AdminController extends Controller
         $totalUsers = User::count();
         $totalTeams = Team::count();
         $totalMatches = Matches::count();
+        $totalEarning = MatchPayment::count() * 10;
 
-        return view('admin.frontend.home', compact('totalUsers', 'totalTeams', 'totalMatches'));
+        return view('admin.frontend.home', compact('totalUsers', 'totalTeams', 'totalMatches', 'totalEarning'));
     }
     public function payments()
     {
