@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('username')->unique();
             $table->string('email')->unique();
+            $table->string('role')->default('user');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
@@ -34,6 +35,7 @@ return new class extends Migration
 
         DB::table('users')->insert([
             'name' => 'Bibek',
+            'role' => 'admin',
             'username' => 'bibek',
             'email' => 'bbekblack@gmail.com',
             'email_verified_at' => now(),
@@ -47,6 +49,7 @@ return new class extends Migration
 
         DB::table('users')->insert([
             'name' => 'bimal',
+            'role' => 'admin',
             'username' => 'bimal_username',
             'email' => 'bimal@gmail.com',
             'email_verified_at' => now(),
@@ -59,6 +62,7 @@ return new class extends Migration
         ]);
         DB::table('users')->insert([
             'name' => 'suraj',
+            'role' => 'admin',
             'username' => 'suraj_username',
             'email' => 'suraj@gmail.com',
             'email_verified_at' => now(),
