@@ -19,7 +19,9 @@
                                 <th>Payment ID</th>
                                 <th>User ID</th>
                                 <th>Match ID</th>
+                                <th>Match Key</th>
                                 <th>Transaction ID</th>
+                                <th>Amount</th>
                                 <th>Created At</th>
                             </tr>
                         </thead>
@@ -30,7 +32,9 @@
                                 <td>{{ $payment->id }}</td>
                                 <td>{{ $payment->user->name }}</td>
                                 <td>{{ $payment->match_id }}</td>
+                                <td>{{ optional($payment->match)->key }}</td>
                                 <td>{{ $payment->transaction_id }}</td>
+                                <td>{{ 10 }}</td>
                                 <td>{{ $payment->created_at }}</td>
                             </tr>
                             @endforeach
