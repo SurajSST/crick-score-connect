@@ -90,7 +90,16 @@ class ApiController extends Controller
                         })
                         ->whereRaw('sender_id = users.id OR receiver_id = users.id');
                 })
-                ->get(['id', 'name', 'username']);
+                ->get(['id', 'name', 'username', 'profile_photo_path']);
+
+            $users = $users->map(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'username' => $user->username,
+                    'profile_photo_url' => $user->profile_photo_path, // Access the virtual attribute
+                ];
+            });
 
             return response()->json($users, 200);
         } catch (QueryException $e) {
