@@ -90,7 +90,7 @@ class ApiController extends Controller
                         })
                         ->whereRaw('sender_id = users.id OR receiver_id = users.id');
                 })
-                ->get(['id', 'name', 'username']);
+                ->get(['id', 'name', 'username', 'profile_photo_path']);
 
             return response()->json($users, 200);
         } catch (QueryException $e) {
