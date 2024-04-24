@@ -97,7 +97,7 @@ class ApiController extends Controller
                     'id' => $user->id,
                     'name' => $user->name,
                     'username' => $user->username,
-                    'profile_photo_url' => $appUrl . '/' . $user->profile_photo_path,
+                    'profile_photo_url' => $appUrl . '/storage/' . $user->profile_photo_path,
                 ];
             });
 
