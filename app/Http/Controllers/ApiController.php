@@ -168,7 +168,7 @@ class ApiController extends Controller
                     'innings' => (string)$totalMatchesBowled, // Assuming 1 innings per match
                     'runs' => (string)$totalRunsConceded,
                     'overs' => (string)$totalOvers,
-                    'strikeRate' => (string)$strikeRateBowling, // Calculate strike rate if needed
+                    'strikeRate' => (string)round($strikeRateBowling, 2), // Calculate strike rate if needed
                     'maidens' => (string)$totalMaidens,
                     'wickets' => (string)$totalWickets,
                     'bBowling' => (string)$bBowling,
@@ -203,12 +203,14 @@ class ApiController extends Controller
 
             // Bowling Stats
             $bowlingStats = $user->bowlingStats()->latest()->get();
+            $totalBalls = $bowlingStats->sum('balls');
             $totalWickets = $bowlingStats->sum('wickets_taken');
             $totalOvers = $bowlingStats->sum('overs_bowled');
             $totalRunsConceded = $bowlingStats->sum('runs_conceded');
             $totalMatchesBowled = $bowlingStats->count();
             $bowlingEconomyRate = $totalOvers > 0 ? $totalRunsConceded / $totalOvers : 0;
             $totalMaidens = $bowlingStats->sum('maidens');
+            $strikeRateBowling = $totalBalls / $totalWickets;
             $bestBowling = $bowlingStats->groupBy('match_id')
                 ->reduce(function ($bestSoFar, $matchStats) {
                     $maxWickets = $matchStats->max('wickets_taken');
