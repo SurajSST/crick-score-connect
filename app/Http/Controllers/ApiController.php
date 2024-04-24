@@ -76,7 +76,6 @@ class ApiController extends Controller
             if (!$query) {
                 return response()->json([], 200);
             }
-
             $users = User::where('name', 'LIKE', "%$query%")
                 ->orWhere('email', 'LIKE', "%$query%")
                 ->orWhere('username', 'LIKE', "%$query%")
@@ -91,13 +90,14 @@ class ApiController extends Controller
                         ->whereRaw('sender_id = users.id OR receiver_id = users.id');
                 })
                 ->get(['id', 'name', 'username', 'profile_photo_path']);
+            $appUrl = config('app.url');
 
-            $users = $users->map(function ($user) {
+            $users = $users->map(function ($user) use ($appUrl) {
                 return [
                     'id' => $user->id,
                     'name' => $user->name,
                     'username' => $user->username,
-                    'profile_photo_url' => $user->profile_photo_path, // Access the virtual attribute
+                    'profile_photo_url' => $appUrl . '/' . $user->profile_photo_path,
                 ];
             });
 
